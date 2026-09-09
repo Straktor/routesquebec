@@ -7,6 +7,7 @@ import { ROUTE_SECTIONS, type RouteSectionGroup } from '../utils/routeSections';
 const props = defineProps<{
   routes: RouteInfo[];
   selectedRouteIds: string[];
+  isSidebarOpen?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -273,7 +274,10 @@ onUnmounted(() => {
 
     <!-- Floating Quick Type Selector Bar (RawBlock Card) -->
     <div
-      class="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-[500] sm:max-w-[calc(100%-220px)] overflow-x-auto flex items-center gap-1.5 p-1.5 sm:p-2 bg-white border-[3px] border-black text-xs font-mono select-none"
+      :class="[
+        'absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-[500] sm:max-w-[calc(100%-220px)] overflow-x-auto items-center gap-1.5 p-1.5 sm:p-2 bg-white border-[3px] border-black text-xs font-mono select-none',
+        isSidebarOpen ? 'hidden md:flex' : 'flex'
+      ]"
     >
       <span class="font-bold uppercase tracking-wider pl-1 pr-1 shrink-0 text-[10px] sm:text-xs">
         TYPES MTQ :
@@ -294,7 +298,12 @@ onUnmounted(() => {
     </div>
 
     <!-- Floating Map Controls (Top Right RawBlock Buttons) -->
-    <div class="absolute top-14 sm:top-4 right-2 sm:right-4 z-[500] flex flex-col gap-1.5 sm:gap-2">
+    <div
+      :class="[
+        'absolute top-14 sm:top-4 right-2 sm:right-4 z-[500] flex-col gap-1.5 sm:gap-2',
+        isSidebarOpen ? 'hidden md:flex' : 'flex'
+      ]"
+    >
       <!-- Reset View to Quebec -->
       <button
         @click="resetView"
@@ -313,7 +322,12 @@ onUnmounted(() => {
     </div>
 
     <!-- Map Legend (Collapsible on mobile, permanent on desktop) -->
-    <div class="absolute bottom-4 left-2 sm:bottom-6 sm:left-6 z-[500] pointer-events-auto select-none">
+    <div
+      :class="[
+        'absolute bottom-4 left-2 sm:bottom-6 sm:left-6 z-[500] pointer-events-auto select-none',
+        isSidebarOpen ? 'hidden md:block' : 'block'
+      ]"
+    >
       <!-- Toggle button for mobile -->
       <button
         @click="isLegendOpen = !isLegendOpen"

@@ -69,10 +69,10 @@ function toggleSidebar() {
       <!-- Sidebar container with responsive sliding -->
       <div
         :class="[
-          'transition-all duration-200 ease-linear z-30 shrink-0 h-full flex flex-col',
+          'transition-all duration-200 ease-linear z-[1050] md:z-20 shrink-0 h-full flex flex-col',
           isSidebarOpen
             ? 'absolute inset-0 md:relative md:w-[440px] w-full bg-white'
-            : 'w-0 overflow-hidden'
+            : 'w-0 overflow-hidden pointer-events-none md:pointer-events-auto'
         ]"
       >
         <RouteSidebar
@@ -114,6 +114,7 @@ function toggleSidebar() {
         <MapView
           :routes="routes"
           :selected-route-ids="selectedRouteIds"
+          :is-sidebar-open="isSidebarOpen"
           @toggle-route="handleToggleRoute"
           @clear-selection="handleClearSelection"
           @set-selection="handleSetSelection"
