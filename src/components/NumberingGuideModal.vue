@@ -149,48 +149,49 @@ onUnmounted(() => {
 
               <!-- SVG Diagram -->
               <div class="w-full overflow-x-auto">
-                <svg viewBox="0 0 700 240" class="w-full min-w-[550px] h-auto font-mono text-xs">
+                <svg viewBox="0 0 700 230" class="w-full min-w-[550px] h-auto" style="font-family: var(--font-body), system-ui, sans-serif;">
                   <!-- Background grid -->
-                  <rect x="0" y="0" width="700" height="240" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
-                  <line x1="50" y1="0" x2="50" y2="240" stroke="#EEEEEE" stroke-width="1"/>
-                  <line x1="200" y1="0" x2="200" y2="240" stroke="#EEEEEE" stroke-width="1"/>
-                  <line x1="350" y1="0" x2="350" y2="240" stroke="#EEEEEE" stroke-width="1"/>
-                  <line x1="500" y1="0" x2="500" y2="240" stroke="#EEEEEE" stroke-width="1"/>
-                  <line x1="650" y1="0" x2="650" y2="240" stroke="#EEEEEE" stroke-width="1"/>
+                  <rect x="0" y="0" width="700" height="230" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+                  <line x1="80" y1="0" x2="80" y2="230" stroke="#F3F4F6" stroke-width="1"/>
+                  <line x1="220" y1="0" x2="220" y2="230" stroke="#F3F4F6" stroke-width="1"/>
+                  <line x1="380" y1="0" x2="380" y2="230" stroke="#F3F4F6" stroke-width="1"/>
+                  <line x1="540" y1="0" x2="540" y2="230" stroke="#F3F4F6" stroke-width="1"/>
 
                   <!-- Saint-Laurent River stylized path -->
-                  <path d="M 40 180 Q 250 150 450 110 T 670 50" fill="none" stroke="#2563EB" stroke-width="24" opacity="0.3"/>
-                  <path d="M 40 180 Q 250 150 450 110 T 670 50" fill="none" stroke="#2563EB" stroke-width="4" stroke-dasharray="6,4"/>
-                  <text x="360" y="145" fill="#1D4ED8" font-weight="bold" font-size="11" transform="rotate(-15 360 145)">
-                    FLEUVE SAINT-LAURENT (AXE MAÎTRE DU QUÉBEC)
+                  <path d="M 40 170 Q 250 145 450 105 T 660 50" fill="none" stroke="#DBEAFE" stroke-width="32"/>
+                  <path d="M 40 170 Q 250 145 450 105 T 660 50" fill="none" stroke="#3B82F6" stroke-width="3" stroke-dasharray="8,5"/>
+                  <text x="430" y="112" fill="#1D4ED8" font-weight="700" font-size="11" letter-spacing="1" transform="rotate(-15 430 112)">
+                    FLEUVE SAINT-LAURENT
                   </text>
 
                   <!-- Pair Highway (Even) Parallel to River -->
-                  <path d="M 60 135 Q 260 110 460 70 T 650 25" fill="none" stroke="#000000" stroke-width="6"/>
-                  <!-- Arrow head -->
-                  <polygon points="655,24 640,16 645,28" fill="#000000"/>
-                  <polygon points="55,136 70,144 65,132" fill="#000000"/>
-                  <rect x="230" y="75" width="220" height="26" fill="#000000"/>
-                  <text x="340" y="92" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="11">
-                    PAIRS : EST-OUEST // A-20, A-40, R-132, R-138
+                  <path d="M 50 115 Q 260 90 460 55 T 650 20" fill="none" stroke="#000000" stroke-width="6"/>
+                  <!-- Arrow heads -->
+                  <polygon points="655,19 638,11 644,23" fill="#000000"/>
+                  <polygon points="45,116 62,124 56,112" fill="#000000"/>
+
+                  <!-- Even Axis Badge: Placed above curve with ample space -->
+                  <rect x="190" y="55" width="340" height="28" fill="#000000"/>
+                  <text x="360" y="74" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="12" letter-spacing="0.5">
+                    PAIRS (EST ↔ OUEST) : PARALLÈLES AU FLEUVE
                   </text>
 
                   <!-- Impair Highway (Odd) Perpendicular to River -->
-                  <line x1="280" y1="215" x2="280" y2="35" stroke="#FF0000" stroke-width="6"/>
-                  <polygon points="280,28 273,45 287,45" fill="#FF0000"/>
-                  <polygon points="280,222 273,205 287,205" fill="#FF0000"/>
-                  <rect x="290" y="165" width="220" height="26" fill="#FF0000"/>
-                  <text x="400" y="182" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="11">
-                    IMPAIRS : NORD-SUD // A-15, A-55, A-73
+                  <line x1="150" y1="210" x2="150" y2="25" stroke="#DC2626" stroke-width="6"/>
+                  <polygon points="150,18 143,34 157,34" fill="#DC2626"/>
+                  <polygon points="150,217 143,201 157,201" fill="#DC2626"/>
+
+                  <!-- Odd Axis Badge: Positioned completely to the right of the line with no overlap -->
+                  <rect x="170" y="150" width="340" height="28" fill="#DC2626"/>
+                  <text x="340" y="169" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="12" letter-spacing="0.5">
+                    IMPAIRS (NORD ↕ SUD) : PERPENDICULAIRES
                   </text>
 
-                  <!-- Geographic progression labels -->
-                  <text x="70" y="225" fill="#000000" font-weight="bold" font-size="10">
-                    OUEST (Numéros débutent à l'ouest)
-                  </text>
-                  <text x="520" y="225" fill="#000000" font-weight="bold" font-size="10">
-                    EST (Numéros croissent vers l'est)
-                  </text>
+                  <!-- Cardinal points -->
+                  <text x="25" y="215" fill="#6B7280" font-weight="700" font-size="10">OUEST (km 0)</text>
+                  <text x="590" y="215" fill="#6B7280" font-weight="700" font-size="10">EST (&rarr; Océan)</text>
+                  <text x="165" y="22" fill="#DC2626" font-weight="800" font-size="10">▲ NORD</text>
+                  <text x="165" y="222" fill="#DC2626" font-weight="800" font-size="10">▼ SUD (Frontière)</text>
                 </svg>
               </div>
 
@@ -207,7 +208,7 @@ onUnmounted(() => {
                 </div>
 
                 <div class="p-3 bg-white border-2 border-black">
-                  <div class="font-bold text-xs uppercase bg-[#FF0000] text-white px-2 py-0.5 inline-block mb-1">
+                  <div class="font-bold text-xs uppercase bg-[#DC2626] text-white px-2 py-0.5 inline-block mb-1">
                     CHIFFRES IMPAIRS // NORD-SUD
                   </div>
                   <ul class="text-xs font-mono space-y-1 text-black/80 list-disc list-inside">
@@ -245,38 +246,31 @@ onUnmounted(() => {
               </div>
 
               <div class="w-full overflow-x-auto">
-                <svg viewBox="0 0 700 230" class="w-full min-w-[550px] h-auto font-mono text-xs">
+                <svg viewBox="0 0 700 230" class="w-full min-w-[550px] h-auto" style="font-family: var(--font-body), system-ui, sans-serif;">
                   <rect x="0" y="0" width="700" height="230" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
 
                   <!-- Main Freeway Spine (A-40) -->
-                  <line x1="40" y1="115" x2="660" y2="115" stroke="#000000" stroke-width="8"/>
-                  <rect x="280" y="100" width="140" height="30" fill="#000000"/>
-                  <text x="350" y="120" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="12">
-                    A-40 (AXE PRINCIPAL)
+                  <line x1="30" y1="110" x2="670" y2="110" stroke="#000000" stroke-width="7"/>
+                  <rect x="220" y="95" width="260" height="30" fill="#000000"/>
+                  <text x="350" y="115" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="12">
+                    CORRIDOR PRINCIPAL (1 À 99)
                   </text>
 
                   <!-- Bypass (Rocade) 640 - loops around and rejoins -->
-                  <path d="M 140 115 C 190 20, 510 20, 560 115" fill="none" stroke="#2563EB" stroke-width="6"/>
-                  <circle cx="140" cy="115" r="5" fill="#000000"/>
-                  <circle cx="560" cy="115" r="5" fill="#000000"/>
-                  <rect x="230" y="10" width="240" height="26" fill="#2563EB"/>
-                  <text x="350" y="27" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="11">
-                    ROCADE (PAIR : 4XX, 6XX) // EX : A-640
-                  </text>
-                  <text x="350" y="48" text-anchor="middle" fill="#2563EB" font-weight="bold" font-size="9">
-                    &larr; Quitte l'autoroute mère et y revient (contournement urbain) &rarr;
+                  <path d="M 120 110 C 180 20, 520 20, 580 110" fill="none" stroke="#2563EB" stroke-width="5"/>
+                  <circle cx="120" cy="110" r="5" fill="#000000"/>
+                  <circle cx="580" cy="110" r="5" fill="#000000"/>
+                  <rect x="200" y="12" width="300" height="26" fill="#2563EB"/>
+                  <text x="350" y="29" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="11">
+                    ROCADE (PAIR : 4XX, 6XX) // REJOINT L'AXE
                   </text>
 
                   <!-- Spur (Éperon / Antenne) 520 / 720 - branches off to terminal -->
-                  <path d="M 220 115 C 240 170, 310 195, 410 195" fill="none" stroke="#DC2626" stroke-width="6"/>
-                  <circle cx="220" cy="115" r="5" fill="#000000"/>
-                  <!-- Terminal point / city center -->
-                  <rect x="410" y="180" width="250" height="32" fill="#DC2626"/>
-                  <text x="535" y="196" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="11">
-                    ÉPERON / ANTENNE (IMPAIR : 5XX, 7XX, 9XX)
-                  </text>
-                  <text x="535" y="207" text-anchor="middle" fill="#FFFFFF" font-size="9">
-                    EX : A-520 (AÉROPORT), A-720 (CENTRE-VILLE)
+                  <path d="M 190 110 C 220 165, 290 185, 410 185" fill="none" stroke="#DC2626" stroke-width="5"/>
+                  <circle cx="190" cy="110" r="5" fill="#000000"/>
+                  <rect x="390" y="170" width="290" height="30" fill="#DC2626"/>
+                  <text x="535" y="190" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="11">
+                    ÉPERON (IMPAIR : 5XX, 7XX) // TERMINUS
                   </text>
                 </svg>
               </div>
@@ -346,39 +340,33 @@ onUnmounted(() => {
               </div>
 
               <div class="w-full overflow-x-auto">
-                <svg viewBox="0 0 700 240" class="w-full min-w-[550px] h-auto font-mono text-xs">
-                  <rect x="0" y="0" width="700" height="240" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+                <svg viewBox="0 0 700 180" class="w-full min-w-[550px] h-auto" style="font-family: var(--font-body), system-ui, sans-serif;">
+                  <rect x="0" y="0" width="700" height="180" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
 
                   <!-- North Zone (Rive-Nord) -->
-                  <rect x="10" y="10" width="680" height="75" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
-                  <rect x="25" y="20" width="220" height="24" fill="#16A34A"/>
-                  <text x="135" y="36" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="11">
+                  <rect x="15" y="10" width="670" height="46" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+                  <rect x="25" y="18" width="220" height="28" fill="#16A34A"/>
+                  <text x="135" y="37" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="12">
                     RIVE-NORD : SÉRIE 300
                   </text>
-                  <text x="260" y="36" fill="#16A34A" font-weight="bold" font-size="11">
-                    + ROUTE 138 (COLONNE VERTÉBRALE NORD)
-                  </text>
-                  <text x="25" y="65" fill="#000000" font-size="10">
-                    Routes régionales situées au nord du fleuve : Laurentides, Lanaudière, Mauricie, Saguenay, Côte-Nord.
+                  <text x="260" y="37" fill="#15803D" font-weight="800" font-size="12">
+                    + ROUTE 138 (COLONNE NORD)
                   </text>
 
                   <!-- Saint-Laurent River Channel -->
-                  <rect x="10" y="90" width="680" height="55" fill="#EFF6FF" stroke="#2563EB" stroke-width="3"/>
-                  <text x="350" y="122" text-anchor="middle" fill="#1D4ED8" font-weight="bold" font-size="13">
-                    ~~~ FLEUVE SAINT-LAURENT (FRONTIÈRE NATURELLE DE LA NUMÉROTATION) ~~~
+                  <rect x="15" y="64" width="670" height="50" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+                  <text x="350" y="95" text-anchor="middle" fill="#1D4ED8" font-weight="800" font-size="12" letter-spacing="1">
+                    FLEUVE SAINT-LAURENT (LIGNE DE SÉPARATION DU RÉSEAU)
                   </text>
 
                   <!-- South Zone (Rive-Sud) -->
-                  <rect x="10" y="150" width="680" height="80" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
-                  <rect x="25" y="160" width="220" height="24" fill="#DC2626"/>
-                  <text x="135" y="176" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="11">
+                  <rect x="15" y="122" width="670" height="46" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+                  <rect x="25" y="130" width="220" height="28" fill="#DC2626"/>
+                  <text x="135" y="149" text-anchor="middle" fill="#FFFFFF" font-weight="800" font-size="12">
                     RIVE-SUD : SÉRIE 200
                   </text>
-                  <text x="260" y="176" fill="#DC2626" font-weight="bold" font-size="11">
-                    + ROUTE 132 (COLONNE VERTÉBRALE SUD)
-                  </text>
-                  <text x="25" y="205" fill="#000000" font-size="10">
-                    Routes régionales situées au sud du fleuve : Montérégie, Estrie, Chaudière-Appalaches, Bas-Saint-Laurent, Gaspésie.
+                  <text x="260" y="149" fill="#B91C1C" font-weight="800" font-size="12">
+                    + ROUTE 132 (COLONNE SUD)
                   </text>
                 </svg>
               </div>
