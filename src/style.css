@@ -41,7 +41,7 @@
   }
 }
 
-/* RawBlock Scrollbar */
+/* Brutalist Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -58,7 +58,7 @@
   background: #000000;
 }
 
-/* RawBlock Leaflet Controls */
+/* Brutalist Leaflet Controls */
 .leaflet-control-zoom {
   border: 3px solid #000000 !important;
 }
@@ -76,7 +76,7 @@
   color: #ffffff !important;
 }
 
-/* RawBlock Tooltips */
+/* Brutalist Tooltips */
 .leaflet-tooltip.custom-raw-tooltip {
   background: #000000 !important;
   color: #ffffff !important;
@@ -94,7 +94,7 @@
   display: none !important;
 }
 
-/* RawBlock Popups */
+/* Brutalist Popups */
 .leaflet-popup-content-wrapper {
   background: #ffffff !important;
   color: #000000 !important;

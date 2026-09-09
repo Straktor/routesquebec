@@ -95,7 +95,7 @@ function renderRoutes() {
     const latLngs = route.coordinates.map(c => L.latLng(c[0], c[1]));
     const isSelected = props.selectedRouteIds.includes(route.id);
 
-    // RawBlock stark polyline styling
+    // Stark polyline styling
     const defaultColor = route.category === 'autoroute' ? '#000000' : '#444444';
     const weight = isSelected ? 6 : hasSelection ? 2 : 3.5;
     const opacity = isSelected ? 1 : hasSelection ? 0.25 : 0.85;
@@ -103,7 +103,7 @@ function renderRoutes() {
     let casingPolyline: L.Polyline | undefined;
 
     if (isSelected) {
-      // RawBlock high-contrast casing: 10px black underlay
+      // High-contrast casing: 10px black underlay
       casingPolyline = L.polyline(latLngs, {
         color: '#000000',
         weight: 11,
@@ -121,7 +121,7 @@ function renderRoutes() {
       lineJoin: 'miter',
     }).addTo(currentMap);
 
-    // RawBlock Tooltip: inverted black box with Space Mono
+    // Tooltip: inverted black box with Space Mono
     polyline.bindTooltip(
       `<div class="font-mono text-xs"><strong>${route.name.toUpperCase()}</strong><br/>[${route.number}] // ${route.lengthKm} KM</div>`,
       {
@@ -131,7 +131,7 @@ function renderRoutes() {
       }
     );
 
-    // RawBlock Popup: stark black/white box, no rounding, 3px border
+    // Popup: stark black/white box, no rounding, 3px border
     const popupContent = `
       <div class="p-3 bg-white text-black font-mono border-[3px] border-black">
         <div class="flex items-center gap-2 mb-2 pb-1 border-b-2 border-black">
@@ -272,7 +272,7 @@ onUnmounted(() => {
     <!-- Map Container -->
     <div ref="mapContainer" class="w-full h-full z-0 bg-[#F0F0F0]"></div>
 
-    <!-- Floating Quick Type Selector Bar (RawBlock Card) -->
+    <!-- Floating Quick Type Selector Bar -->
     <div
       :class="[
         'absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-[500] sm:max-w-[calc(100%-220px)] overflow-x-auto items-center gap-1.5 p-1.5 sm:p-2 bg-white border-[3px] border-black text-xs font-mono select-none',
@@ -297,7 +297,7 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <!-- Floating Map Controls (Top Right RawBlock Buttons) -->
+    <!-- Floating Map Controls (Top Right) -->
     <div
       :class="[
         'absolute top-14 sm:top-4 right-2 sm:right-4 z-[500] flex-col gap-1.5 sm:gap-2',

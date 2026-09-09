@@ -30,7 +30,7 @@ onUnmounted(() => {
       v-if="isOpen"
       class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 select-none"
     >
-      <!-- RawBlock Backdrop (Solid semi-opaque black) -->
+      <!-- Modal Backdrop (Solid semi-opaque black) -->
       <div
         @click="emit('close')"
         class="fixed inset-0 bg-black/80 transition-opacity"
@@ -185,7 +185,7 @@ onUnmounted(() => {
 
         <!-- Footer -->
         <div class="px-6 py-3 bg-[#F0F0F0] border-t-[3px] border-black flex items-center justify-between font-mono text-xs shrink-0">
-          <span class="text-black/70 uppercase">RÉFÉRENCE : MTQ // RAWBLOCK</span>
+          <span class="text-black/70 uppercase">RÉFÉRENCE : MINISTÈRE DES TRANSPORTS DU QUÉBEC</span>
           <button
             @click="emit('close')"
             class="px-5 py-2 bg-black hover:bg-white text-white hover:text-black border-[3px] border-black font-bold uppercase tracking-[2px] transition-colors cursor-pointer"

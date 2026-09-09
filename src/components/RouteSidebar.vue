@@ -223,7 +223,7 @@ function selectBySection(section: RouteSectionGroup) {
         </div>
       </div>
 
-      <!-- RawBlock Section Selector (Card) -->
+      <!-- Section Selector (Card) -->
       <div class="border-[3px] border-black p-2.5 bg-[#F0F0F0] space-y-2">
         <div
           @click="isSectionsExpanded = !isSectionsExpanded"
@@ -393,7 +393,7 @@ function selectBySection(section: RouteSectionGroup) {
             : 'bg-white text-black hover:bg-[#F0F0F0]'
         ]"
       >
-        <!-- RawBlock Checkbox (20px x 20px, 3px border, square) -->
+        <!-- Checkbox (20px x 20px, 3px border, square) -->
         <div class="shrink-0 pt-0.5">
           <div
             class="w-5 h-5 border-[3px] flex items-center justify-center font-mono font-bold text-xs"
@@ -407,7 +407,7 @@ function selectBySection(section: RouteSectionGroup) {
           </div>
         </div>
 
-        <!-- Route Square Badge (RawBlock Style: 3px border, square, no gradient) -->
+        <!-- Route Square Badge (3px border, square, no gradient) -->
         <div class="shrink-0">
           <div
             class="w-11 h-11 border-[3px] flex flex-col items-center justify-center font-mono font-black"
@@ -464,7 +464,7 @@ function selectBySection(section: RouteSectionGroup) {
     <!-- Footer Stats -->
     <div class="p-3 bg-white border-t-[3px] border-black text-xs font-mono font-bold uppercase flex items-center justify-between shrink-0">
       <span>{{ table.getRowModel().rows.length }} AXES AFFICHÉS</span>
-      <span class="text-black/60">RAWBLOCK // MTQ</span>
+      <span class="text-black/60">MTQ // QUÉBEC</span>
     </div>
   </aside>
 </template>
