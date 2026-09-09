@@ -1,13 +1,119 @@
 [
   {
+    "id": "A-5",
+    "number": "5",
+    "name": "Autoroute de la Gatineau",
+    "category": "autoroute",
+    "lengthKm": 24,
+    "startPoint": "Pont Macdonald-Cartier (Ottawa)",
+    "endPoint": "Wakefield (Chelsea)",
+    "description": "Corridor autoroutier majeur reliant Ottawa et le centre-ville de Gatineau aux collines de la Gatineau et au parc de la Gatineau.",
+    "color": "#1d4ed8",
+    "coordinates": [
+      [45.433, -75.700],
+      [45.445, -75.720],
+      [45.465, -75.745],
+      [45.512, -75.794],
+      [45.568, -75.845],
+      [45.642, -75.928]
+    ]
+  },
+  {
+    "id": "A-10",
+    "number": "10",
+    "name": "Autoroute des Cantons-de-l'Est",
+    "category": "autoroute",
+    "lengthKm": 143,
+    "startPoint": "Montréal (Pont Samuel-De Champlain)",
+    "endPoint": "Sherbrooke",
+    "description": "Axe majeur reliant le Grand Montréal à la région de l'Estrie (Granby, Bromont, Magog, Sherbrooke).",
+    "color": "#2563eb",
+    "coordinates": [
+      [45.472, -73.532],
+      [45.461, -73.482],
+      [45.432, -73.281],
+      [45.412, -73.002],
+      [45.372, -72.732],
+      [45.312, -72.651],
+      [45.341, -72.522],
+      [45.302, -72.312],
+      [45.272, -72.152],
+      [45.382, -71.932]
+    ]
+  },
+  {
+    "id": "A-13",
+    "number": "13",
+    "name": "Autoroute Chomedey",
+    "category": "autoroute",
+    "lengthKm": 21,
+    "startPoint": "Lachine / Dorval (A-20)",
+    "endPoint": "Boisbriand (A-640)",
+    "description": "Artère nord-sud de l'ouest montréalais desservant l'aéroport YUL, Ville Saint-Laurent et Laval.",
+    "color": "#1e40af",
+    "coordinates": [
+      [45.465, -73.732],
+      [45.495, -73.746],
+      [45.508, -73.755],
+      [45.545, -73.784],
+      [45.568, -73.805],
+      [45.618, -73.832],
+      [45.632, -73.844]
+    ]
+  },
+  {
+    "id": "A-15",
+    "number": "15",
+    "name": "Autoroute des Laurentides & René-Lévesque",
+    "category": "autoroute",
+    "lengthKm": 163,
+    "startPoint": "Saint-Bernard-de-Lacolle (Frontière US / I-87)",
+    "endPoint": "Sainte-Agathe-des-Monts",
+    "description": "Corridor stratégique reliant l'État de New York à Montréal (autoroute Décarie), Laval et les stations des Laurentides.",
+    "color": "#0284c7",
+    "coordinates": [
+      [45.012, -73.372],
+      [45.184, -73.402],
+      [45.302, -73.431],
+      [45.412, -73.512],
+      [45.462, -73.571],
+      [45.492, -73.642],
+      [45.534, -73.662],
+      [45.562, -73.731],
+      [45.672, -73.862],
+      [45.782, -74.002],
+      [45.892, -74.161],
+      [45.952, -74.132],
+      [46.031, -74.212],
+      [46.054, -74.282]
+    ]
+  },
+  {
+    "id": "A-19",
+    "number": "19",
+    "name": "Autoroute Papineau",
+    "category": "autoroute",
+    "lengthKm": 10,
+    "startPoint": "Montréal (Pont Papineau-Leblanc)",
+    "endPoint": "Bois-des-Filion (A-640)",
+    "description": "Liaison directe entre le nord de l'île de Montréal, l'est de Laval et la couronne nord.",
+    "color": "#0369a1",
+    "coordinates": [
+      [45.578, -73.670],
+      [45.602, -73.701],
+      [45.620, -73.722],
+      [45.665, -73.754]
+    ]
+  },
+  {
     "id": "A-20",
     "number": "20",
-    "name": "Autoroute Jean-Lesage",
+    "name": "Autoroute Jean-Lesage (Transcanadienne)",
     "category": "autoroute",
     "lengthKm": 585,
-    "startPoint": "Rivière-Beaudette (Ontario border)",
-    "endPoint": "Mont-Joli",
-    "description": "Main highway corridor of Quebec connecting Montreal, South Shore, Drummondville, Lévis, and the Bas-Saint-Laurent region.",
+    "startPoint": "Rivière-Beaudette (Frontière Ontario / Hwy 401)",
+    "endPoint": "Mont-Joli / Rimouski",
+    "description": "Dorsale autoroutière névralgique du Québec reliant Montréal, Longueuil, Drummondville, Lévis/Québec, et le Bas-Saint-Laurent.",
     "color": "#2563eb",
     "coordinates": [
       [45.222, -74.332],
@@ -39,14 +145,93 @@
     ]
   },
   {
+    "id": "A-25",
+    "number": "25",
+    "name": "Autoroute 25 (Transcanadienne)",
+    "category": "autoroute",
+    "lengthKm": 50,
+    "startPoint": "Longueuil (Tunnel Louis-H.-La Fontaine)",
+    "endPoint": "Saint-Esprit (Lanaudière)",
+    "description": "Franchit le fleuve via le tunnel La Fontaine vers Anjou, traverse Laval et dessert Terrebonne et Lanaudière.",
+    "color": "#3730a3",
+    "coordinates": [
+      [45.572, -73.495],
+      [45.582, -73.502],
+      [45.602, -73.562],
+      [45.672, -73.612],
+      [45.702, -73.642],
+      [45.752, -73.602],
+      [45.852, -73.602],
+      [45.902, -73.662]
+    ]
+  },
+  {
+    "id": "A-30",
+    "number": "30",
+    "name": "Autoroute de l'Acier",
+    "category": "autoroute",
+    "lengthKm": 161,
+    "startPoint": "Salaberry-de-Valleyfield / Vaudreuil",
+    "endPoint": "Bécancour (Trois-Rivières)",
+    "description": "Voie de contournement majeure au sud de Montréal reliant Valleyfield, Châteauguay, Candiac, Boucherville, Sorel-Tracy et Bécancour.",
+    "color": "#4f46e5",
+    "coordinates": [
+      [45.262, -74.132],
+      [45.312, -73.872],
+      [45.362, -73.742],
+      [45.392, -73.532],
+      [45.442, -73.432],
+      [45.572, -73.412],
+      [45.682, -73.382],
+      [45.852, -73.242],
+      [46.032, -73.112],
+      [46.202, -72.782],
+      [46.332, -72.462]
+    ]
+  },
+  {
+    "id": "A-31",
+    "number": "31",
+    "name": "Autoroute Antonio-Barrette",
+    "category": "autoroute",
+    "lengthKm": 14,
+    "startPoint": "Lavaltrie (A-40)",
+    "endPoint": "Joliette",
+    "description": "Relie l'autoroute 40 à la ville de Joliette au cœur de la région de Lanaudière.",
+    "color": "#4338ca",
+    "coordinates": [
+      [45.882, -73.305],
+      [45.952, -73.364],
+      [46.012, -73.432]
+    ]
+  },
+  {
+    "id": "A-35",
+    "number": "35",
+    "name": "Autoroute de la Vallée-des-Forts",
+    "category": "autoroute",
+    "lengthKm": 42,
+    "startPoint": "Saint-Jean-sur-Richelieu (A-10)",
+    "endPoint": "Philipsburg (Frontière US / I-89)",
+    "description": "Liaison internationale reliant Montréal à Boston via le Vermont et l'Interstate 89.",
+    "color": "#312e81",
+    "coordinates": [
+      [45.322, -73.282],
+      [45.302, -73.242],
+      [45.212, -73.152],
+      [45.132, -73.062],
+      [45.022, -73.082]
+    ]
+  },
+  {
     "id": "A-40",
     "number": "40",
-    "name": "Autoroute Félix-Leclerc",
+    "name": "Autoroute Félix-Leclerc (Transcanadienne)",
     "category": "autoroute",
     "lengthKm": 347,
-    "startPoint": "Pointe-Fortune (Ontario border)",
-    "endPoint": "Quebec City (Beauport)",
-    "description": "Crucial north-shore artery traversing Montreal via the Métropolitaine Expressway through Trois-Rivières to Quebec City.",
+    "startPoint": "Pointe-Fortune (Frontière Ontario / Hwy 417)",
+    "endPoint": "Québec / Boischatel",
+    "description": "Grand axe rive-nord traversant Montréal (Métropolitaine), Trois-Rivières jusqu'à la région de la Capitale-Nationale.",
     "color": "#1d4ed8",
     "coordinates": [
       [45.542, -74.372],
@@ -69,57 +254,8 @@
       [46.702, -71.584],
       [46.741, -71.402],
       [46.822, -71.284],
-      [46.864, -71.182]
-    ]
-  },
-  {
-    "id": "A-15",
-    "number": "15",
-    "name": "Autoroute des Laurentides & René-Lévesque",
-    "category": "autoroute",
-    "lengthKm": 163,
-    "startPoint": "Saint-Bernard-de-Lacolle (US border)",
-    "endPoint": "Sainte-Agathe-des-Monts",
-    "description": "North-South thoroughfare from the US border through Montreal (Décarie Expressway) into the Laurentian mountain resorts.",
-    "color": "#0284c7",
-    "coordinates": [
-      [45.012, -73.372],
-      [45.184, -73.402],
-      [45.302, -73.431],
-      [45.412, -73.512],
-      [45.462, -73.571],
-      [45.492, -73.642],
-      [45.534, -73.662],
-      [45.562, -73.731],
-      [45.672, -73.862],
-      [45.782, -74.002],
-      [45.892, -74.161],
-      [45.952, -74.132],
-      [46.031, -74.212],
-      [46.054, -74.282]
-    ]
-  },
-  {
-    "id": "A-10",
-    "number": "10",
-    "name": "Autoroute des Cantons-de-l'Est",
-    "category": "autoroute",
-    "lengthKm": 143,
-    "startPoint": "Montreal (Pont Samuel-De Champlain)",
-    "endPoint": "Sherbrooke",
-    "description": "Major expressway linking Greater Montreal to the Eastern Townships including Granby, Magog, and Sherbrooke.",
-    "color": "#0ea5e9",
-    "coordinates": [
-      [45.472, -73.532],
-      [45.461, -73.482],
-      [45.432, -73.281],
-      [45.412, -73.002],
-      [45.372, -72.732],
-      [45.312, -72.651],
-      [45.341, -72.522],
-      [45.302, -72.312],
-      [45.272, -72.152],
-      [45.382, -71.932]
+      [46.864, -71.182],
+      [46.882, -71.142]
     ]
   },
   {
@@ -129,8 +265,8 @@
     "category": "autoroute",
     "lengthKm": 159,
     "startPoint": "Gatineau / Hull",
-    "endPoint": "Mirabel / Saint-Jérôme",
-    "description": "Connects the National Capital Outaouais region through Buckingham, Montebello, and Lachute to Mirabel and the Laurentians.",
+    "endPoint": "Mirabel / Saint-Jérôme (A-15)",
+    "description": "Axe vital d'Outaouais-Laurentides reliant Gatineau, Buckingham, Montebello, Lachute et Mirabel.",
     "color": "#3b82f6",
     "coordinates": [
       [45.452, -75.722],
@@ -148,12 +284,12 @@
   {
     "id": "A-55",
     "number": "55",
-    "name": "Autoroute Joseph-Armand Bombardier",
+    "name": "Autoroute Joseph-Armand Bombardier & Transquébécoise",
     "category": "autoroute",
     "lengthKm": 247,
-    "startPoint": "Stanstead (US border)",
+    "startPoint": "Stanstead (Frontière US / I-91)",
     "endPoint": "Shawinigan",
-    "description": "Cross-provincial highway linking Vermont (I-91) through Sherbrooke, Drummondville, Trois-Rivières (Pont Laviolette) to the Mauricie.",
+    "description": "Traverse le Québec du sud au nord : Vermont, Magog, Sherbrooke, Drummondville, Pont Laviolette, Trois-Rivières et Shawinigan.",
     "color": "#6366f1",
     "coordinates": [
       [45.002, -72.142],
@@ -171,14 +307,30 @@
     ]
   },
   {
+    "id": "A-70",
+    "number": "70",
+    "name": "Autoroute de l'Aluminium",
+    "category": "autoroute",
+    "lengthKm": 31,
+    "startPoint": "Jonquière",
+    "endPoint": "La Baie (Saguenay)",
+    "description": "Voie rapide urbaine reliant les trois arrondissements majeurs de la ville de Saguenay (Jonquière, Chicoutimi, La Baie).",
+    "color": "#6d28d9",
+    "coordinates": [
+      [48.412, -71.252],
+      [48.422, -71.072],
+      [48.332, -70.882]
+    ]
+  },
+  {
     "id": "A-73",
     "number": "73",
-    "name": "Autoroute Robert-Cliche & Laurentienne",
+    "name": "Autoroute Robert-Cliche & Henri-IV",
     "category": "autoroute",
     "lengthKm": 140,
     "startPoint": "Saint-Georges (Beauce)",
     "endPoint": "Stoneham-et-Tewkesbury",
-    "description": "Runs through the Chaudière-Appalaches / Beauce region, crosses the St. Lawrence on the Pierre-Laporte Bridge, through Quebec City to Stoneham.",
+    "description": "Traverse la Beauce, franchit le fleuve sur le pont Pierre-Laporte, coupe Québec du sud au nord vers les Laurentides.",
     "color": "#8b5cf6",
     "coordinates": [
       [46.122, -70.672],
@@ -192,90 +344,14 @@
     ]
   },
   {
-    "id": "A-30",
-    "number": "30",
-    "name": "Autoroute de l'Acier",
-    "category": "autoroute",
-    "lengthKm": 161,
-    "startPoint": "Salaberry-de-Valleyfield",
-    "endPoint": "Sorel-Tracy",
-    "description": "Southern bypass corridor around the Island of Montreal, linking Montérégie industries and Saint-Laurent seaway crossings.",
-    "color": "#4f46e5",
-    "coordinates": [
-      [45.262, -74.132],
-      [45.312, -73.872],
-      [45.362, -73.742],
-      [45.392, -73.532],
-      [45.442, -73.432],
-      [45.572, -73.412],
-      [45.682, -73.382],
-      [45.852, -73.242],
-      [46.032, -73.112]
-    ]
-  },
-  {
-    "id": "A-25",
-    "number": "25",
-    "name": "Autoroute 25",
-    "category": "autoroute",
-    "lengthKm": 50,
-    "startPoint": "Montreal (Tunnel Louis-H.-La Fontaine)",
-    "endPoint": "Saint-Esprit",
-    "description": "North-South highway connecting Longueuil, east Montreal, Laval (Pont Olivier-Charbonneau) and Lanaudière.",
-    "color": "#4338ca",
-    "coordinates": [
-      [45.582, -73.502],
-      [45.602, -73.562],
-      [45.672, -73.612],
-      [45.702, -73.642],
-      [45.752, -73.602],
-      [45.852, -73.602],
-      [45.902, -73.662]
-    ]
-  },
-  {
-    "id": "A-35",
-    "number": "35",
-    "name": "Autoroute de la Vallée-des-Forts",
-    "category": "autoroute",
-    "lengthKm": 42,
-    "startPoint": "Saint-Jean-sur-Richelieu",
-    "endPoint": "Philipsburg (US border / I-89)",
-    "description": "Key international transit link from Montreal towards Vermont and Interstate 89.",
-    "color": "#312e81",
-    "coordinates": [
-      [45.322, -73.282],
-      [45.302, -73.242],
-      [45.212, -73.152],
-      [45.132, -73.062],
-      [45.022, -73.082]
-    ]
-  },
-  {
-    "id": "A-70",
-    "number": "70",
-    "name": "Autoroute de l'Aluminium",
-    "category": "autoroute",
-    "lengthKm": 31,
-    "startPoint": "Jonquière",
-    "endPoint": "La Baie",
-    "description": "Regional expressway serving the Saguenay urban area (Jonquière, Chicoutimi, La Baie).",
-    "color": "#6d28d9",
-    "coordinates": [
-      [48.412, -71.252],
-      [48.422, -71.072],
-      [48.332, -70.882]
-    ]
-  },
-  {
     "id": "A-85",
     "number": "85",
-    "name": "Autoroute Claude-Béchard",
+    "name": "Autoroute Claude-Béchard (Transcanadienne)",
     "category": "autoroute",
     "lengthKm": 90,
-    "startPoint": "Rivière-du-Loup",
-    "endPoint": "Dégelis (New Brunswick border)",
-    "description": "Crucial Trans-Canada highway link connecting Quebec to New Brunswick and Atlantic Canada.",
+    "startPoint": "Rivière-du-Loup (A-20)",
+    "endPoint": "Dégelis (Frontière Nouveau-Brunswick)",
+    "description": "Section autoroutière transcanadienne reliant le Québec aux provinces maritimes via le Témiscouata.",
     "color": "#7c3aed",
     "coordinates": [
       [47.832, -69.532],
@@ -286,14 +362,247 @@
     ]
   },
   {
+    "id": "A-410",
+    "number": "410",
+    "name": "Autoroute Jacques-O'Bready",
+    "category": "autoroute",
+    "lengthKm": 17,
+    "startPoint": "Sherbrooke Ouest (A-10 / A-55)",
+    "endPoint": "Lennoxville (Route 108)",
+    "description": "Voie de contournement sud de Sherbrooke desservant l'Université de Sherbrooke et les arrondissements du sud.",
+    "color": "#4338ca",
+    "coordinates": [
+      [45.345, -71.975],
+      [45.355, -71.948],
+      [45.362, -71.928],
+      [45.368, -71.862]
+    ]
+  },
+  {
+    "id": "A-440-LAVAL",
+    "number": "440",
+    "name": "Autoroute Jean-Noël-Lavoie (Laval)",
+    "category": "autoroute",
+    "lengthKm": 19,
+    "startPoint": "Laval Ouest (A-13)",
+    "endPoint": "Laval Est (A-25)",
+    "description": "Axe est-ouest central de l'île de Laval reliant toutes ses autoroutes nord-sud (A-13, A-15, A-19, A-25).",
+    "color": "#2563eb",
+    "coordinates": [
+      [45.568, -73.805],
+      [45.588, -73.742],
+      [45.620, -73.722],
+      [45.662, -73.638]
+    ]
+  },
+  {
+    "id": "A-440-QUEBEC",
+    "number": "440",
+    "name": "Autoroute Charest & Dufferin-Montmorency (Québec)",
+    "category": "autoroute",
+    "lengthKm": 13,
+    "startPoint": "Québec (A-73 / A-573)",
+    "endPoint": "Chute-Montmorency (Beauport)",
+    "description": "Dessert le centre-ville de Québec, le Vieux-Port et la falaise vers la chute Montmorency le long du fleuve.",
+    "color": "#1d4ed8",
+    "coordinates": [
+      [46.802, -71.328],
+      [46.818, -71.218],
+      [46.862, -71.182],
+      [46.885, -71.145]
+    ]
+  },
+  {
+    "id": "A-520",
+    "number": "520",
+    "name": "Autoroute Côte-de-Liesse",
+    "category": "autoroute",
+    "lengthKm": 8,
+    "startPoint": "Aéroport YUL Montréal-Trudeau",
+    "endPoint": "Montréal (A-40 Métropolitaine)",
+    "description": "Relie directement l'aéroport international Montréal-Trudeau aux autoroutes 13, 20 et 40.",
+    "color": "#0284c7",
+    "coordinates": [
+      [45.460, -73.738],
+      [45.495, -73.746],
+      [45.502, -73.675]
+    ]
+  },
+  {
+    "id": "A-530",
+    "number": "530",
+    "name": "Autoroute 530",
+    "category": "autoroute",
+    "lengthKm": 13,
+    "startPoint": "Salaberry-de-Valleyfield (Route 132)",
+    "endPoint": "A-30 (Beauharnois)",
+    "description": "Antenne autoroutière reliant Salaberry-de-Valleyfield à l'autoroute 30 de contournement.",
+    "color": "#4f46e5",
+    "coordinates": [
+      [45.234, -74.152],
+      [45.252, -74.128],
+      [45.262, -74.102]
+    ]
+  },
+  {
+    "id": "A-540",
+    "number": "540",
+    "name": "Autoroute 540",
+    "category": "autoroute",
+    "lengthKm": 5,
+    "startPoint": "Vaudreuil-Dorion (A-20)",
+    "endPoint": "Vaudreuil (A-40)",
+    "description": "Bretelle de jonction essentielle entre l'autoroute 20 et l'autoroute 40 à l'ouest de Montréal.",
+    "color": "#3b82f6",
+    "coordinates": [
+      [45.385, -74.032],
+      [45.421, -74.032]
+    ]
+  },
+  {
+    "id": "A-573",
+    "number": "573",
+    "name": "Autoroute Henri-IV Nord",
+    "category": "autoroute",
+    "lengthKm": 13,
+    "startPoint": "Québec (A-40 / A-73)",
+    "endPoint": "Shannon / Val-Bélair (Route 369)",
+    "description": "Prolongement nord de l'autoroute Henri-IV desservant Val-Bélair et la base militaire de Valcartier.",
+    "color": "#7c3aed",
+    "coordinates": [
+      [46.822, -71.325],
+      [46.872, -71.402],
+      [46.912, -71.442]
+    ]
+  },
+  {
+    "id": "A-610",
+    "number": "610",
+    "name": "Autoroute Louis-Bilodeau",
+    "category": "autoroute",
+    "lengthKm": 11,
+    "startPoint": "Sherbrooke Nord (A-10 / A-55)",
+    "endPoint": "Fleurimont (Route 112)",
+    "description": "Voie de contournement nord-est de Sherbrooke reliant le CHUS Fleurimont et la route 112.",
+    "color": "#6366f1",
+    "coordinates": [
+      [45.425, -71.942],
+      [45.442, -71.884],
+      [45.451, -71.822]
+    ]
+  },
+  {
+    "id": "A-640",
+    "number": "640",
+    "name": "Autoroute 640 (Ceinture Nord)",
+    "category": "autoroute",
+    "lengthKm": 55,
+    "startPoint": "Saint-Joseph-du-Lac (Oka)",
+    "endPoint": "Charlemagne / Repentigny (A-40)",
+    "description": "Grande autoroute de ceinture de la rive-nord reliant Deux-Montagnes, Sainte-Thérèse, Blainville, Terrebonne et Repentigny.",
+    "color": "#2563eb",
+    "coordinates": [
+      [45.532, -74.012],
+      [45.548, -73.912],
+      [45.635, -73.842],
+      [45.652, -73.792],
+      [45.665, -73.754],
+      [45.712, -73.642],
+      [45.728, -73.492]
+    ]
+  },
+  {
+    "id": "A-720",
+    "number": "720",
+    "name": "Autoroute Ville-Marie / Route 136",
+    "category": "autoroute",
+    "lengthKm": 7,
+    "startPoint": "Échangeur Turcot",
+    "endPoint": "Pont Jacques-Cartier",
+    "description": "Expressway souterrain traversant le cœur du centre-ville de Montréal sous le Palais des Congrès.",
+    "color": "#1d4ed8",
+    "coordinates": [
+      [45.471, -73.601],
+      [45.485, -73.572],
+      [45.502, -73.559],
+      [45.524, -73.548]
+    ]
+  },
+  {
+    "id": "A-730",
+    "number": "730",
+    "name": "Autoroute 730",
+    "category": "autoroute",
+    "lengthKm": 5,
+    "startPoint": "Saint-Constant (A-30)",
+    "endPoint": "Sainte-Catherine (Route 132 / Pont Mercier)",
+    "description": "Courte autoroute d'accès reliant l'A-30 aux accès du pont Mercier et à Sainte-Catherine.",
+    "color": "#3b82f6",
+    "coordinates": [
+      [45.362, -73.602],
+      [45.378, -73.582],
+      [45.412, -73.572]
+    ]
+  },
+  {
+    "id": "A-740",
+    "number": "740",
+    "name": "Autoroute Robert-Bourassa",
+    "category": "autoroute",
+    "lengthKm": 12,
+    "startPoint": "Québec (Boulevard Laurier / Ponts)",
+    "endPoint": "Québec Nord (Boulevard Bastien)",
+    "description": "Axe urbain névralgique de Québec desservant l'Université Laval, Sainte-Foy et Neufchâtel.",
+    "color": "#8b5cf6",
+    "coordinates": [
+      [46.772, -71.285],
+      [46.785, -71.272],
+      [46.808, -71.278],
+      [46.835, -71.282],
+      [46.862, -71.295]
+    ]
+  },
+  {
+    "id": "A-930",
+    "number": "930",
+    "name": "Autoroute 930",
+    "category": "autoroute",
+    "lengthKm": 3,
+    "startPoint": "Candiac (A-30)",
+    "endPoint": "Candiac (Route 132)",
+    "description": "Liaison directe reliant l'autoroute 30 au boulevard Marie-Victorin à Candiac.",
+    "color": "#6366f1",
+    "coordinates": [
+      [45.385, -73.548],
+      [45.395, -73.535],
+      [45.405, -73.522]
+    ]
+  },
+  {
+    "id": "A-973",
+    "number": "973",
+    "name": "Autoroute Laurentienne Sud",
+    "category": "autoroute",
+    "lengthKm": 4,
+    "startPoint": "Québec (Centre-ville / Pont Drouin)",
+    "endPoint": "Québec (A-40 Félix-Leclerc)",
+    "description": "Segment sud de l'autoroute Laurentienne donnant accès direct au centre-ville de Québec et à Saint-Roch.",
+    "color": "#7c3aed",
+    "coordinates": [
+      [46.818, -71.228],
+      [46.828, -71.242],
+      [46.848, -71.265]
+    ]
+  },
+  {
     "id": "R-138",
     "number": "138",
     "name": "Route 138 (Route Jacques-Cartier)",
     "category": "national",
     "lengthKm": 1420,
-    "startPoint": "Elgin (US border)",
-    "endPoint": "Kegaska (Côte-Nord)",
-    "description": "One of Quebec's longest and most scenic highways, stretching along the Saint Lawrence North Shore from Montérégie all the way into the Lower North Shore.",
+    "startPoint": "Elgin (Frontière US)",
+    "endPoint": "Kegaska (Basse-Côte-Nord)",
+    "description": "Plus de 1 400 km le long de la rive nord du Saint-Laurent : Montréal, Trois-Rivières, Québec, Charlevoix, Tadoussac, Sept-Îles et Kegaska.",
     "color": "#059669",
     "coordinates": [
       [44.992, -74.342],
@@ -330,9 +639,9 @@
     "name": "Route 132 (Tour de la Gaspésie)",
     "category": "national",
     "lengthKm": 1612,
-    "startPoint": "Dundee (US border)",
-    "endPoint": "Gaspé Peninsula loop",
-    "description": "The longest highway in Quebec, tracing the southern shoreline of the Saint Lawrence River and circling the entire Gaspé Peninsula.",
+    "startPoint": "Dundee (Frontière US)",
+    "endPoint": "Boucle de la Gaspésie",
+    "description": "La plus longue route du Québec, longeant la rive sud du Saint-Laurent et contournant toute la péninsule gaspésienne.",
     "color": "#10b981",
     "coordinates": [
       [45.012, -74.512],
@@ -372,8 +681,8 @@
     "category": "national",
     "lengthKm": 660,
     "startPoint": "Sainte-Agathe-des-Monts",
-    "endPoint": "Arntfield (Ontario border)",
-    "description": "Vital northern Trans-Canada route traversing Mont-Tremblant, Mont-Laurier, La Vérendrye Wildlife Reserve, Val-d'Or, and Rouyn-Noranda.",
+    "endPoint": "Arntfield (Frontière Ontario / Hwy 66)",
+    "description": "Axe vital reliant les Laurentides, Mont-Laurier, la réserve de La Vérendrye, Val-d'Or et Rouyn-Noranda.",
     "color": "#0d9488",
     "coordinates": [
       [46.052, -74.282],
@@ -397,9 +706,9 @@
     "name": "Route 175 (Route de la Bravoure)",
     "category": "national",
     "lengthKm": 225,
-    "startPoint": "Quebec City",
+    "startPoint": "Québec",
     "endPoint": "Saguenay (Chicoutimi)",
-    "description": "Modern divided highway traversing the rugged Laurentides Wildlife Reserve between Quebec City and Saguenay.",
+    "description": "Route à 4 voies séparées traversant la réserve faunique des Laurentides entre Québec et Saguenay.",
     "color": "#14b8a6",
     "coordinates": [
       [46.822, -71.282],
@@ -414,12 +723,12 @@
   {
     "id": "R-155",
     "number": "155",
-    "name": "Route 155",
+    "name": "Route 155 (Vallée du Saint-Maurice)",
     "category": "national",
     "lengthKm": 247,
     "startPoint": "Shawinigan",
     "endPoint": "Chambord (Lac-Saint-Jean)",
-    "description": "Scenic highway winding alongside the Saint-Maurice River through La Tuque towards Lac Saint-Jean.",
+    "description": "Route panoramique remontant la rivière Saint-Maurice par La Tuque vers le lac Saint-Jean.",
     "color": "#16a34a",
     "coordinates": [
       [46.542, -72.742],
@@ -437,9 +746,9 @@
     "name": "Route 169 (Ceinture du Lac-Saint-Jean)",
     "category": "national",
     "lengthKm": 135,
-    "startPoint": "Chambord (Loop)",
+    "startPoint": "Chambord (Boucle)",
     "endPoint": "Alma / Chambord",
-    "description": "Circular scenic route encircling the entirety of Lac Saint-Jean connecting Roberval, Saint-Félicien, Dolbeau, and Alma.",
+    "description": "Boucle ceinturant le majestueux lac Saint-Jean : Roberval, Saint-Félicien, Dolbeau-Mistassini et Alma.",
     "color": "#65a30d",
     "coordinates": [
       [48.432, -72.062],
@@ -466,8 +775,8 @@
     "category": "national",
     "lengthKm": 225,
     "startPoint": "Rivière-Héva (Route 117)",
-    "endPoint": "Matagami (James Bay Highway)",
-    "description": "Northern gateway corridor traversing Amos and connecting Abitibi to Matagami and the Billy-Diamond Highway into northern Quebec.",
+    "endPoint": "Matagami (Route Billy-Diamond)",
+    "description": "Corridor reliant l'Abitibi à Matagami et point de départ vers la baie James et le Grand Nord québécois.",
     "color": "#84cc16",
     "coordinates": [
       [48.212, -78.202],
@@ -476,6 +785,92 @@
       [48.802, -77.902],
       [49.252, -77.782],
       [49.752, -77.632]
+    ]
+  },
+  {
+    "id": "R-112",
+    "number": "112",
+    "name": "Route 112",
+    "category": "national",
+    "lengthKm": 318,
+    "startPoint": "Montréal (Pont Jacques-Cartier)",
+    "endPoint": "Frampton (Chaudière-Appalaches)",
+    "description": "Traverse la Montérégie, l'Estrie (Magog, Sherbrooke) et la région minière de Thetford Mines vers la Beauce.",
+    "color": "#059669",
+    "coordinates": [
+      [45.522, -73.535],
+      [45.535, -73.492],
+      [45.485, -73.342],
+      [45.412, -72.952],
+      [45.362, -72.582],
+      [45.272, -72.152],
+      [45.402, -71.892],
+      [45.722, -71.552],
+      [46.082, -71.302],
+      [46.452, -70.802]
+    ]
+  },
+  {
+    "id": "R-116",
+    "number": "116",
+    "name": "Route 116",
+    "category": "national",
+    "lengthKm": 275,
+    "startPoint": "Longueuil (Pont Victoria)",
+    "endPoint": "Lévis (A-20)",
+    "description": "Artère de la rive-sud reliant Saint-Bruno, Saint-Hyacinthe, Acton Vale, Richmond, Victoriaville et Lévis.",
+    "color": "#10b981",
+    "coordinates": [
+      [45.502, -73.512],
+      [45.535, -73.352],
+      [45.582, -73.202],
+      [45.628, -72.952],
+      [45.652, -72.562],
+      [45.662, -72.142],
+      [45.852, -71.952],
+      [46.052, -71.952],
+      [46.422, -71.522],
+      [46.742, -71.284]
+    ]
+  },
+  {
+    "id": "R-167",
+    "number": "167",
+    "name": "Route 167 (Route de Chibougamau)",
+    "category": "national",
+    "lengthKm": 410,
+    "startPoint": "Saint-Félicien (Lac-Saint-Jean)",
+    "endPoint": "Chibougamau / Monts Otish",
+    "description": "Relie le lac Saint-Jean à Chibougamau et Chapais à travers la réserve faunique Ashuapmushuan.",
+    "color": "#0d9488",
+    "coordinates": [
+      [48.652, -72.442],
+      [48.882, -72.952],
+      [49.252, -73.652],
+      [49.652, -74.152],
+      [49.912, -74.362],
+      [50.252, -73.952]
+    ]
+  },
+  {
+    "id": "R-389",
+    "number": "389",
+    "name": "Route 389 (Route Manicouagan - Fermont)",
+    "category": "national",
+    "lengthKm": 570,
+    "startPoint": "Baie-Comeau",
+    "endPoint": "Fermont (Frontière Terre-Neuve-et-Labrador)",
+    "description": "Route mythique du Nord québécois longeant le réservoir Manicouagan, les barrages Manic-2 et Manic-5 jusqu'à la frontière du Labrador.",
+    "color": "#14b8a6",
+    "coordinates": [
+      [49.222, -68.152],
+      [49.322, -68.352],
+      [49.982, -68.652],
+      [50.642, -68.722],
+      [51.482, -68.802],
+      [51.852, -69.252],
+      [52.482, -67.452],
+      [52.782, -67.102]
     ]
   }
 ]
