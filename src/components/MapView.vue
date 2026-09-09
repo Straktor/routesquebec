@@ -43,14 +43,40 @@ function initMap() {
   renderRoutes();
 }
 
-function setTileLayer(osm: boolean) {
+// Custom TileLayer serving local pre-bundled offline tiles with OSM fallback
+const LocalFallbackTileLayer = (L.TileLayer as any).extend({
+  createTile(coords: L.Coords, done: L.DoneCallback) {
+    const tile = document.createElement('img');
+    tile.alt = '';
+    tile.setAttribute('role', 'presentation');
+
+    const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+    const localUrl = `${baseUrl}/tiles/${coords.z}/${coords.x}/${coords.y}.png`;
+    const fallbackUrl = `https://tile.openstreetmap.org/${coords.z}/${coords.x}/${coords.y}.png`;
+
+    tile.onload = () => done(undefined, tile);
+    tile.onerror = () => {
+      // If local tile not found (e.g. beyond zoom 8), fallback to OpenStreetMap
+      if (tile.src !== fallbackUrl) {
+        tile.src = fallbackUrl;
+      } else {
+        done(new Error('Tile load error'), tile);
+      }
+    };
+
+    tile.src = localUrl;
+    return tile;
+  },
+});
+
+function setTileLayer(directOsm: boolean) {
   if (!map) return;
 
   if (currentTileLayer) {
     map.removeLayer(currentTileLayer);
   }
 
-  if (osm) {
+  if (directOsm) {
     currentTileLayer = L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
@@ -59,18 +85,16 @@ function setTileLayer(osm: boolean) {
       }
     );
   } else {
-    // Stark high-contrast light monochrome map (CartoDB Positron)
-    currentTileLayer = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-      {
-        maxZoom: 19,
-        subdomains: 'abcd',
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
-      }
-    );
+    // Local pre-bundled offline tiles with seamless OSM fallback
+    currentTileLayer = new LocalFallbackTileLayer('', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap (Tuiles locales du Québec)',
+    });
   }
 
-  currentTileLayer.addTo(map);
+  if (currentTileLayer) {
+    currentTileLayer.addTo(map);
+  }
 }
 
 function toggleTileLayer() {
@@ -317,7 +341,7 @@ onUnmounted(() => {
         @click="toggleTileLayer"
         class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
       >
-        {{ isOsmLayer ? 'CARTO POSITRON' : 'CARTO STANDARD' }}
+        {{ isOsmLayer ? 'TUILES : EN LIGNE' : 'TUILES : LOCALES' }}
       </button>
     </div>
 
