@@ -41,6 +41,10 @@ function handleClearSelection() {
   selectedRouteIds.value = [];
 }
 
+function handleSetSelection(ids: string[]) {
+  selectedRouteIds.value = ids;
+}
+
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
@@ -77,6 +81,7 @@ function toggleSidebar() {
           @toggle-route="handleToggleRoute"
           @select-all="handleSelectAll"
           @clear-selection="handleClearSelection"
+          @set-selection="handleSetSelection"
         />
       </div>
 
@@ -95,6 +100,7 @@ function toggleSidebar() {
           :selected-route-ids="selectedRouteIds"
           @toggle-route="handleToggleRoute"
           @clear-selection="handleClearSelection"
+          @set-selection="handleSetSelection"
           @open-guide="isGuideOpen = true"
         />
       </main>

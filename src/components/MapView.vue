@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import L from 'leaflet';
-import { Maximize2, Layers, BookOpen } from '@lucide/vue';
+import { Maximize2, Layers, BookOpen, Sparkles } from '@lucide/vue';
 import type { RouteInfo } from '../types/route';
+import { ROUTE_SECTIONS, type RouteSectionGroup } from '../utils/routeSections';
 
 const props = defineProps<{
   routes: RouteInfo[];
@@ -13,6 +14,7 @@ const emit = defineEmits<{
   (e: 'toggleRoute', id: string): void;
   (e: 'clearSelection'): void;
   (e: 'openGuide'): void;
+  (e: 'setSelection', ids: string[]): void;
 }>();
 
 const mapContainer = ref<HTMLDivElement | null>(null);
@@ -214,6 +216,22 @@ function resetView() {
   map.setView(QUEBEC_CENTER, DEFAULT_ZOOM, { animate: true });
 }
 
+function isSectionActive(section: RouteSectionGroup) {
+  const matching = props.routes.filter(section.matcher);
+  if (matching.length === 0) return false;
+  return matching.every(r => props.selectedRouteIds.includes(r.id));
+}
+
+function handleQuickSelectSection(section: RouteSectionGroup) {
+  const matchingIds = props.routes.filter(section.matcher).map(r => r.id);
+  const allSelected = matchingIds.every(id => props.selectedRouteIds.includes(id));
+  if (allSelected) {
+    emit('clearSelection');
+  } else {
+    emit('setSelection', matchingIds);
+  }
+}
+
 watch(
   () => props.selectedRouteIds,
   () => {
@@ -247,7 +265,31 @@ onUnmounted(() => {
     <!-- Map Container -->
     <div ref="mapContainer" class="w-full h-full z-0 bg-slate-100"></div>
 
-    <!-- Floating Map Controls -->
+    <!-- Floating Quick Type Selector Bar (Top Left) -->
+    <div
+      class="absolute top-4 left-4 z-[500] max-w-[calc(100%-190px)] overflow-x-auto flex items-center gap-1.5 p-1.5 bg-white/95 backdrop-blur-xs rounded-xl shadow-md border border-slate-200 text-xs"
+    >
+      <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1.5 pr-0.5 shrink-0 flex items-center gap-1">
+        <Sparkles class="w-3.5 h-3.5 text-amber-500" />
+        <span class="hidden sm:inline">Sections MTQ :</span>
+      </span>
+      <button
+        v-for="sec in ROUTE_SECTIONS"
+        :key="sec.id"
+        @click="handleQuickSelectSection(sec)"
+        class="px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+        :class="[
+          isSectionActive(sec)
+            ? 'bg-amber-500 text-white shadow-xs font-semibold ring-1 ring-amber-600'
+            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+        ]"
+        :title="sec.description"
+      >
+        <span>{{ sec.shortLabel }}</span>
+      </button>
+    </div>
+
+    <!-- Floating Map Controls (Top Right) -->
     <div class="absolute top-4 right-4 z-[500] flex flex-col gap-2">
       <!-- Guide Button -->
       <button
@@ -280,7 +322,7 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <!-- Map Legend -->
+    <!-- Map Legend (Bottom Left) -->
     <div
       class="absolute bottom-6 left-6 z-[500] bg-white/95 backdrop-blur-xs px-3.5 py-2.5 rounded-xl shadow-md border border-slate-200 text-xs space-y-2 pointer-events-auto"
     >
