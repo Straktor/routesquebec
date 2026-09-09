@@ -186,11 +186,11 @@ function selectBySection(section: RouteSectionGroup) {
         <label class="block font-mono text-[10px] font-bold uppercase tracking-[1px] text-black mb-1">
           CATÉGORIE //
         </label>
-        <div class="flex gap-2">
+        <div class="grid grid-cols-2 gap-1.5 sm:flex sm:gap-1.5">
           <button
             @click="selectedCategory = 'all'"
             :class="[
-              'flex-1 py-1.5 px-2 border-[2px] border-black font-mono text-[11px] font-bold uppercase tracking-[1px] text-center cursor-pointer transition-colors',
+              'py-1.5 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors',
               selectedCategory === 'all'
                 ? 'bg-black text-white'
                 : 'bg-white text-black hover:bg-black hover:text-white'
@@ -201,24 +201,35 @@ function selectBySection(section: RouteSectionGroup) {
           <button
             @click="selectedCategory = 'autoroute'"
             :class="[
-              'flex-1 py-1.5 px-2 border-[2px] border-black font-mono text-[11px] font-bold uppercase tracking-[1px] text-center cursor-pointer transition-colors',
+              'py-1.5 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors',
               selectedCategory === 'autoroute'
                 ? 'bg-black text-white'
                 : 'bg-white text-black hover:bg-black hover:text-white'
             ]"
           >
-            AUTOROUTES
+            AUTOROUTES ({{ routes.filter(r => r.category === 'autoroute').length }})
           </button>
           <button
             @click="selectedCategory = 'national'"
             :class="[
-              'flex-1 py-1.5 px-2 border-[2px] border-black font-mono text-[11px] font-bold uppercase tracking-[1px] text-center cursor-pointer transition-colors',
+              'py-1.5 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors',
               selectedCategory === 'national'
                 ? 'bg-black text-white'
                 : 'bg-white text-black hover:bg-black hover:text-white'
             ]"
           >
-            ROUTES
+            NATIONALES ({{ routes.filter(r => r.category === 'national').length }})
+          </button>
+          <button
+            @click="selectedCategory = 'regional'"
+            :class="[
+              'py-1.5 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors',
+              selectedCategory === 'regional'
+                ? 'bg-black text-white'
+                : 'bg-white text-black hover:bg-black hover:text-white'
+            ]"
+          >
+            RÉGIONALES ({{ routes.filter(r => r.category === 'regional').length }})
           </button>
         </div>
       </div>

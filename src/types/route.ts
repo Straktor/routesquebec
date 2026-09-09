@@ -1,4 +1,4 @@
-export type RouteCategory = 'autoroute' | 'national';
+export type RouteCategory = 'autoroute' | 'national' | 'regional';
 
 export interface RouteInfo {
   id: string;
