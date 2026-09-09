@@ -51,7 +51,7 @@ function toggleSidebar() {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen w-screen overflow-hidden bg-slate-900">
+  <div class="flex flex-col h-screen w-screen overflow-hidden bg-white text-black font-sans">
     <!-- Navbar Header -->
     <Navbar
       :is-sidebar-open="isSidebarOpen"
@@ -65,12 +65,12 @@ function toggleSidebar() {
     />
 
     <!-- Main Content (Sidebar + Map) -->
-    <div class="flex flex-1 relative overflow-hidden">
+    <div class="flex flex-1 relative overflow-hidden bg-white">
       <!-- Sidebar container with responsive sliding -->
       <div
         :class="[
-          'transition-all duration-300 ease-in-out z-20 shrink-0 h-full',
-          isSidebarOpen ? 'w-full sm:w-96 md:w-[420px]' : 'w-0 overflow-hidden'
+          'transition-all duration-200 ease-linear z-20 shrink-0 h-full',
+          isSidebarOpen ? 'w-full sm:w-96 md:w-[440px]' : 'w-0 overflow-hidden'
         ]"
       >
         <RouteSidebar
@@ -86,13 +86,13 @@ function toggleSidebar() {
       </div>
 
       <!-- Map Container -->
-      <main class="flex-1 h-full relative overflow-hidden">
+      <main class="flex-1 h-full relative overflow-hidden bg-[#F0F0F0]">
         <!-- Error Banner -->
         <div
           v-if="error"
-          class="absolute top-4 left-4 z-[1000] bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg text-sm"
+          class="absolute top-4 left-4 z-[1000] bg-[#FF0000] text-white border-[3px] border-black font-mono font-bold text-xs uppercase px-4 py-3"
         >
-          Erreur lors du chargement des routes: {{ error.message }}
+          [ERREUR SYSTÈME] {{ error.message }}
         </div>
 
         <MapView

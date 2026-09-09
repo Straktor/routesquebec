@@ -8,19 +8,6 @@ import {
   createColumnHelper,
   type SortingState,
 } from '@tanstack/vue-table';
-import {
-  Search,
-  ArrowUpDown,
-  X,
-  MapPin,
-  Route as RouteIcon,
-  Check,
-  CheckSquare,
-  Square,
-  Sparkles,
-  ChevronDown,
-  ChevronUp,
-} from '@lucide/vue';
 import type { RouteCategory, RouteInfo } from '../types/route';
 import { ROUTE_SECTIONS, type RouteSectionGroup } from '../utils/routeSections';
 
@@ -159,11 +146,9 @@ function selectBySection(section: RouteSectionGroup) {
   const allSelected = matchingIds.every(id => props.selectedRouteIds.includes(id));
 
   if (allSelected) {
-    // Deselect this group
     const remaining = props.selectedRouteIds.filter(id => !matchingIds.includes(id));
     emit('setSelection', remaining);
   } else {
-    // Select all routes in this group
     const merged = Array.from(new Set([...props.selectedRouteIds, ...matchingIds]));
     emit('setSelection', merged);
   }
@@ -171,161 +156,149 @@ function selectBySection(section: RouteSectionGroup) {
 </script>
 
 <template>
-  <aside class="flex flex-col h-full bg-white border-r border-slate-200 shadow-sm select-none">
-    <!-- Search & Filter Controls -->
-    <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 space-y-2.5">
+  <aside class="flex flex-col h-full bg-white border-r-[5px] border-black select-none">
+    <!-- Controls Section (Card with 3px black bottom border) -->
+    <div class="p-4 border-b-[3px] border-black bg-white space-y-3">
       <!-- Search Input -->
-      <div class="relative">
-        <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-        <input
-          v-model="globalFilter"
-          type="text"
-          placeholder="Rechercher une route (ex: 20, 138, Gaspé)..."
-          class="w-full pl-9 pr-8 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all placeholder:text-slate-400"
-        />
-        <button
-          v-if="globalFilter"
-          @click="globalFilter = ''"
-          class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-          title="Effacer la recherche"
-        >
-          <X class="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      <!-- Category Filter Pills -->
-      <div class="flex items-center gap-1.5 p-1 bg-slate-200/80 rounded-lg text-xs font-medium">
-        <button
-          @click="selectedCategory = 'all'"
-          :class="[
-            'flex-1 py-1 px-2 rounded-md transition-all text-center cursor-pointer',
-            selectedCategory === 'all'
-              ? 'bg-white text-slate-800 shadow-xs font-semibold'
-              : 'text-slate-600 hover:text-slate-900'
-          ]"
-        >
-          Toutes ({{ routes.length }})
-        </button>
-        <button
-          @click="selectedCategory = 'autoroute'"
-          :class="[
-            'flex-1 py-1 px-2 rounded-md transition-all text-center flex items-center justify-center gap-1 cursor-pointer',
-            selectedCategory === 'autoroute'
-              ? 'bg-blue-600 text-white shadow-xs font-semibold'
-              : 'text-slate-600 hover:text-blue-700'
-          ]"
-        >
-          <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-          Autoroutes
-        </button>
-        <button
-          @click="selectedCategory = 'national'"
-          :class="[
-            'flex-1 py-1 px-2 rounded-md transition-all text-center flex items-center justify-center gap-1 cursor-pointer',
-            selectedCategory === 'national'
-              ? 'bg-emerald-600 text-white shadow-xs font-semibold'
-              : 'text-slate-600 hover:text-emerald-700'
-          ]"
-        >
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          Routes
-        </button>
-      </div>
-
-      <!-- Section / Type Selection Accordion -->
-      <div class="bg-white rounded-xl border border-slate-200 p-2 space-y-1.5 shadow-2xs">
-        <div
-          @click="isSectionsExpanded = !isSectionsExpanded"
-          class="flex items-center justify-between cursor-pointer hover:text-blue-600 transition-colors"
-        >
-          <div class="flex items-center gap-1.5 text-xs font-bold text-slate-800">
-            <Sparkles class="w-3.5 h-3.5 text-amber-500" />
-            <span>Sélection rapide par nomenclature</span>
-          </div>
-          <button class="text-slate-400 p-0.5">
-            <ChevronUp v-if="isSectionsExpanded" class="w-3.5 h-3.5" />
-            <ChevronDown v-else class="w-3.5 h-3.5" />
+      <div>
+        <label class="block font-mono text-[11px] font-bold uppercase tracking-[1px] text-black mb-1">
+          FILTRER PAR MOT-CLÉ //
+        </label>
+        <div class="relative">
+          <input
+            v-model="globalFilter"
+            type="text"
+            placeholder="RECHERCHER (20, 138, GASPÉ)..."
+            class="w-full px-3 py-2 text-sm bg-[#F0F0F0] hover:bg-[#E8E8E8] text-black border-[3px] border-black focus:border-[5px] focus:bg-white focus:outline-none font-mono transition-all placeholder:text-black/40 uppercase"
+          />
+          <button
+            v-if="globalFilter"
+            @click="globalFilter = ''"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 font-mono font-bold text-xs hover:text-[#FF0000] px-1 cursor-pointer"
+          >
+            [X]
           </button>
         </div>
+      </div>
 
-        <div v-show="isSectionsExpanded" class="pt-1.5 space-y-2">
-          <!-- Orientation group -->
+      <!-- Category Filter Chips -->
+      <div>
+        <label class="block font-mono text-[10px] font-bold uppercase tracking-[1px] text-black mb-1">
+          CATÉGORIE //
+        </label>
+        <div class="flex gap-2">
+          <button
+            @click="selectedCategory = 'all'"
+            :class="[
+              'flex-1 py-1.5 px-2 border-[2px] border-black font-mono text-[11px] font-bold uppercase tracking-[1px] text-center cursor-pointer transition-colors',
+              selectedCategory === 'all'
+                ? 'bg-black text-white'
+                : 'bg-white text-black hover:bg-black hover:text-white'
+            ]"
+          >
+            TOUTES ({{ routes.length }})
+          </button>
+          <button
+            @click="selectedCategory = 'autoroute'"
+            :class="[
+              'flex-1 py-1.5 px-2 border-[2px] border-black font-mono text-[11px] font-bold uppercase tracking-[1px] text-center cursor-pointer transition-colors',
+              selectedCategory === 'autoroute'
+                ? 'bg-black text-white'
+                : 'bg-white text-black hover:bg-black hover:text-white'
+            ]"
+          >
+            AUTOROUTES
+          </button>
+          <button
+            @click="selectedCategory = 'national'"
+            :class="[
+              'flex-1 py-1.5 px-2 border-[2px] border-black font-mono text-[11px] font-bold uppercase tracking-[1px] text-center cursor-pointer transition-colors',
+              selectedCategory === 'national'
+                ? 'bg-black text-white'
+                : 'bg-white text-black hover:bg-black hover:text-white'
+            ]"
+          >
+            ROUTES
+          </button>
+        </div>
+      </div>
+
+      <!-- RawBlock Section Selector (Card) -->
+      <div class="border-[3px] border-black p-2.5 bg-[#F0F0F0] space-y-2">
+        <div
+          @click="isSectionsExpanded = !isSectionsExpanded"
+          class="flex items-center justify-between cursor-pointer font-mono text-xs font-bold uppercase tracking-wider text-black hover:underline"
+        >
+          <span>[+] SÉLECTION PAR NOMENCLATURE</span>
+          <span>{{ isSectionsExpanded ? '[-]' : '[+]' }}</span>
+        </div>
+
+        <div v-show="isSectionsExpanded" class="pt-1 space-y-2 border-t-2 border-black">
+          <!-- Orientation -->
           <div class="space-y-1">
-            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Orientation MTQ</div>
+            <div class="text-[9px] font-mono uppercase font-bold text-black/60 tracking-wider">
+              ORIENTATION (PARALLELE / PERPENDICULAIRE)
+            </div>
             <div class="grid grid-cols-2 gap-1.5">
               <button
                 v-for="sec in ROUTE_SECTIONS.filter(s => s.category === 'orientation')"
                 :key="sec.id"
                 @click="selectBySection(sec)"
-                class="px-2 py-1.5 rounded-lg text-[11px] font-medium border text-left transition-all flex items-center justify-between cursor-pointer group"
+                class="px-2 py-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase text-left transition-colors flex items-center justify-between cursor-pointer"
                 :class="[
                   isSectionAllSelected(sec)
-                    ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
                 ]"
-                :title="sec.description"
               >
                 <span class="truncate">{{ sec.shortLabel }}</span>
-                <span
-                  class="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold"
-                  :class="isSectionAllSelected(sec) ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'"
-                >
-                  {{ getSectionCount(sec) }}
-                </span>
+                <span class="ml-1 text-[9px]">{{ getSectionCount(sec) }}</span>
               </button>
             </div>
           </div>
 
-          <!-- Hierarchy group -->
+          <!-- Hierarchy -->
           <div class="space-y-1">
-            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Fonction & Série</div>
+            <div class="text-[9px] font-mono uppercase font-bold text-black/60 tracking-wider">
+              HIÉRARCHIE MTQ (ROCADES / ANTENNES)
+            </div>
             <div class="grid grid-cols-2 gap-1.5">
               <button
                 v-for="sec in ROUTE_SECTIONS.filter(s => s.category === 'hierarchy')"
                 :key="sec.id"
                 @click="selectBySection(sec)"
-                class="px-2 py-1.5 rounded-lg text-[11px] font-medium border text-left transition-all flex items-center justify-between cursor-pointer group"
+                class="px-2 py-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase text-left transition-colors flex items-center justify-between cursor-pointer"
                 :class="[
                   isSectionAllSelected(sec)
-                    ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
                 ]"
-                :title="sec.description"
               >
                 <span class="truncate">{{ sec.shortLabel }}</span>
-                <span
-                  class="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold"
-                  :class="isSectionAllSelected(sec) ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'"
-                >
-                  {{ getSectionCount(sec) }}
-                </span>
+                <span class="ml-1 text-[9px]">{{ getSectionCount(sec) }}</span>
               </button>
             </div>
           </div>
 
-          <!-- Geography group -->
+          <!-- Geography -->
           <div class="space-y-1">
-            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Situation Géographique</div>
+            <div class="text-[9px] font-mono uppercase font-bold text-black/60 tracking-wider">
+              CORRIDOR DU SAINT-LAURENT
+            </div>
             <div class="grid grid-cols-2 gap-1.5">
               <button
                 v-for="sec in ROUTE_SECTIONS.filter(s => s.category === 'geography')"
                 :key="sec.id"
                 @click="selectBySection(sec)"
-                class="px-2 py-1.5 rounded-lg text-[11px] font-medium border text-left transition-all flex items-center justify-between cursor-pointer group"
+                class="px-2 py-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase text-left transition-colors flex items-center justify-between cursor-pointer"
                 :class="[
                   isSectionAllSelected(sec)
-                    ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
-                    : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
                 ]"
-                :title="sec.description"
               >
                 <span class="truncate">{{ sec.shortLabel }}</span>
-                <span
-                  class="ml-1 px-1.5 py-0.2 rounded text-[10px] font-bold"
-                  :class="isSectionAllSelected(sec) ? 'bg-amber-600 text-white' : 'bg-slate-200 text-slate-600'"
-                >
-                  {{ getSectionCount(sec) }}
-                </span>
+                <span class="ml-1 text-[9px]">{{ getSectionCount(sec) }}</span>
               </button>
             </div>
           </div>
@@ -333,46 +306,44 @@ function selectBySection(section: RouteSectionGroup) {
       </div>
 
       <!-- Multi-select & Sort Toolbar -->
-      <div class="flex items-center justify-between text-xs text-slate-500 pt-0.5">
+      <div class="flex items-center justify-between text-xs font-mono pt-1">
         <!-- Master Checkbox Toggle -->
         <button
           @click="toggleSelectAllVisible"
-          class="flex items-center gap-1.5 font-medium hover:text-blue-600 transition-colors py-0.5 cursor-pointer"
-          :title="isAllVisibleSelected ? 'Tout désélectionner' : 'Sélectionner toutes les routes visibles'"
+          class="flex items-center gap-2 font-bold uppercase hover:underline cursor-pointer"
         >
-          <CheckSquare v-if="isAllVisibleSelected" class="w-4 h-4 text-blue-600" />
-          <Square v-else class="w-4 h-4 text-slate-400" />
-          <span>{{ isAllVisibleSelected ? 'Désélectionner' : 'Tout sélectionner' }}</span>
+          <div
+            class="w-5 h-5 border-[3px] border-black flex items-center justify-center font-bold text-xs"
+            :class="isAllVisibleSelected ? 'bg-black text-white' : 'bg-white'"
+          >
+            {{ isAllVisibleSelected ? 'X' : '' }}
+          </div>
+          <span>{{ isAllVisibleSelected ? 'DÉ-SÉLECTIONNER' : 'TOUT COCHER' }}</span>
         </button>
 
         <!-- Sort Bar -->
         <div class="flex items-center gap-1">
+          <span class="text-[10px] uppercase font-bold text-black/50">TRI :</span>
           <button
             @click="toggleSort('number')"
-            class="px-2 py-0.5 rounded hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
-            :class="{ 'font-semibold text-blue-600 bg-blue-50': sorting[0]?.id === 'number' }"
-            title="Trier par numéro"
+            class="px-1.5 py-0.5 border border-black uppercase font-bold text-[10px] cursor-pointer"
+            :class="{ 'bg-black text-white': sorting[0]?.id === 'number' }"
           >
             N°
-            <ArrowUpDown class="w-3 h-3" />
           </button>
           <button
             @click="toggleSort('name')"
-            class="px-2 py-0.5 rounded hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
-            :class="{ 'font-semibold text-blue-600 bg-blue-50': sorting[0]?.id === 'name' }"
-            title="Trier par nom"
+            class="px-1.5 py-0.5 border border-black uppercase font-bold text-[10px] cursor-pointer"
+            :class="{ 'bg-black text-white': sorting[0]?.id === 'name' }"
           >
-            Nom
-            <ArrowUpDown class="w-3 h-3" />
+            NOM
           </button>
           <button
             @click="toggleSort('lengthKm')"
-            class="px-2 py-0.5 rounded hover:bg-slate-200 transition-colors flex items-center gap-1 cursor-pointer"
-            :class="{ 'font-semibold text-blue-600 bg-blue-50': sorting[0]?.id === 'lengthKm' }"
-            title="Trier par distance"
+            class="px-1.5 py-0.5 border border-black uppercase font-bold text-[10px] cursor-pointer"
+            :class="{ 'bg-black text-white': sorting[0]?.id === 'lengthKm' }"
           >
-            Distance
-            <ArrowUpDown class="w-3 h-3" />
+            KM
           </button>
         </div>
       </div>
@@ -381,40 +352,33 @@ function selectBySection(section: RouteSectionGroup) {
     <!-- Active Multi-Selection Banner -->
     <div
       v-if="selectedRouteIds.length > 0"
-      class="px-4 py-2 bg-amber-50 border-b border-amber-200/80 flex items-center justify-between text-xs text-amber-900 shrink-0"
+      class="px-4 py-2 bg-black text-white border-b-[3px] border-black flex items-center justify-between text-xs font-mono font-bold uppercase tracking-wider shrink-0"
     >
-      <div class="flex items-center gap-1.5 font-medium">
-        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-        <span>
-          <strong>{{ selectedRouteIds.length }}</strong>
-          {{ selectedRouteIds.length > 1 ? 'routes sélectionnées' : 'route sélectionnée' }}
-        </span>
-      </div>
+      <span>
+        {{ selectedRouteIds.length }} SÉLECTIONNÉE{{ selectedRouteIds.length > 1 ? 'S' : '' }}
+      </span>
       <button
         @click="emit('clearSelection')"
-        class="text-amber-700 hover:text-amber-900 underline font-semibold flex items-center gap-1 cursor-pointer"
+        class="text-[#FFA500] hover:underline uppercase text-[11px] cursor-pointer"
       >
-        <X class="w-3.5 h-3.5" />
-        Désélectionner tout
+        [TOUT EFFACER]
       </button>
     </div>
 
-    <!-- Route List (Powered by TanStack Table rows) -->
-    <div class="flex-1 overflow-y-auto divide-y divide-slate-100">
+    <!-- Route List -->
+    <div class="flex-1 overflow-y-auto divide-y-[3px] divide-black">
       <div
         v-if="isLoading"
-        class="p-8 text-center text-sm text-slate-400 flex flex-col items-center gap-2"
+        class="p-8 text-center text-sm font-mono uppercase"
       >
-        <div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        Chargement des routes du Québec...
+        CHARGEMENT DU RÉSEAU...
       </div>
 
       <div
         v-else-if="table.getRowModel().rows.length === 0"
-        class="p-8 text-center text-sm text-slate-500"
+        class="p-8 text-center text-sm font-mono uppercase text-black/60"
       >
-        <RouteIcon class="w-8 h-8 mx-auto text-slate-300 mb-2" />
-        Aucune route ne correspond à vos filtres.
+        AUCUNE ROUTE CORRESPONDANTE.
       </div>
 
       <div
@@ -423,63 +387,74 @@ function selectBySection(section: RouteSectionGroup) {
         :key="row.original.id"
         @click="emit('toggleRoute', row.original.id)"
         :class="[
-          'p-3 cursor-pointer transition-all flex items-start gap-3 text-left relative group',
+          'p-3.5 cursor-pointer transition-colors flex items-start gap-3 text-left relative',
           isSelected(row.original.id)
-            ? 'bg-amber-50/80 border-l-4 border-l-orange-500 shadow-xs'
-            : 'hover:bg-slate-50 border-l-4 border-l-transparent'
+            ? 'bg-black text-white'
+            : 'bg-white text-black hover:bg-[#F0F0F0]'
         ]"
       >
-        <!-- Checkbox Indicator -->
-        <div class="shrink-0 pt-2.5">
+        <!-- RawBlock Checkbox (20px x 20px, 3px border, square) -->
+        <div class="shrink-0 pt-0.5">
           <div
-            class="w-4 h-4 rounded border flex items-center justify-center transition-colors"
-            :class="isSelected(row.original.id) ? 'bg-orange-500 border-orange-600 text-white' : 'border-slate-300 bg-white group-hover:border-slate-400'"
+            class="w-5 h-5 border-[3px] flex items-center justify-center font-mono font-bold text-xs"
+            :class="[
+              isSelected(row.original.id)
+                ? 'border-white bg-white text-black'
+                : 'border-black bg-white text-transparent'
+            ]"
           >
-            <Check v-if="isSelected(row.original.id)" class="w-3 h-3 stroke-[3]" />
+            X
           </div>
         </div>
 
-        <!-- Route Shield Badge -->
-        <div class="shrink-0 pt-0.5">
-          <!-- Autoroute Shield (Quebec Blue) -->
+        <!-- Route Square Badge (RawBlock Style: 3px border, square, no gradient) -->
+        <div class="shrink-0">
           <div
-            v-if="row.original.category === 'autoroute'"
-            class="w-11 h-11 rounded-md bg-blue-600 text-white flex flex-col items-center justify-center shadow-xs border-2 border-white ring-1 ring-blue-700"
+            class="w-11 h-11 border-[3px] flex flex-col items-center justify-center font-mono font-black"
+            :class="[
+              isSelected(row.original.id)
+                ? 'border-white bg-white text-black'
+                : 'border-black bg-black text-white'
+            ]"
           >
-            <span class="text-[9px] font-extrabold uppercase tracking-tighter leading-none text-blue-100">A</span>
-            <span class="text-sm font-black leading-tight">{{ row.original.number }}</span>
-          </div>
-
-          <!-- Route Shield (Quebec Green) -->
-          <div
-            v-else
-            class="w-11 h-11 rounded-lg bg-emerald-600 text-white flex flex-col items-center justify-center shadow-xs border-2 border-white ring-1 ring-emerald-700"
-          >
-            <span class="text-[9px] font-extrabold uppercase tracking-tighter leading-none text-emerald-100">RTE</span>
-            <span class="text-sm font-black leading-tight">{{ row.original.number }}</span>
+            <span class="text-[9px] uppercase tracking-tighter leading-none">
+              {{ row.original.category === 'autoroute' ? 'A' : 'RTE' }}
+            </span>
+            <span class="text-sm leading-tight font-black">
+              {{ row.original.number }}
+            </span>
           </div>
         </div>
 
         <!-- Route Details -->
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between gap-1">
+          <div class="flex items-baseline justify-between gap-2">
             <h3
-              class="text-xs sm:text-sm font-semibold truncate"
-              :class="isSelected(row.original.id) ? 'text-amber-950 font-bold' : 'text-slate-800'"
+              class="text-sm font-bold tracking-tight truncate uppercase"
+              :class="isSelected(row.original.id) ? 'text-white' : 'text-black'"
+              style="font-family: var(--font-headline)"
             >
               {{ row.original.name }}
             </h3>
-            <span class="shrink-0 text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
-              {{ row.original.lengthKm }} km
+            <span
+              class="shrink-0 text-xs font-mono font-bold border-2 px-1 py-0.2 uppercase"
+              :class="isSelected(row.original.id) ? 'border-white bg-white text-black' : 'border-black bg-black text-white'"
+            >
+              {{ row.original.lengthKm }} KM
             </span>
           </div>
 
-          <p class="text-xs text-slate-500 mt-1 flex items-center gap-1 truncate">
-            <MapPin class="w-3 h-3 text-slate-400 shrink-0" />
-            <span class="truncate">{{ row.original.startPoint }} → {{ row.original.endPoint }}</span>
+          <p
+            class="text-xs font-mono uppercase tracking-tight mt-1 truncate"
+            :class="isSelected(row.original.id) ? 'text-white/80' : 'text-black/70'"
+          >
+            {{ row.original.startPoint }} → {{ row.original.endPoint }}
           </p>
 
-          <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed">
+          <p
+            class="text-[11px] font-mono leading-relaxed mt-1 line-clamp-2"
+            :class="isSelected(row.original.id) ? 'text-white/60' : 'text-black/50'"
+          >
             {{ row.original.description }}
           </p>
         </div>
@@ -487,9 +462,9 @@ function selectBySection(section: RouteSectionGroup) {
     </div>
 
     <!-- Footer Stats -->
-    <div class="p-2.5 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between shrink-0">
-      <span>{{ table.getRowModel().rows.length }} routes affichées</span>
-      <span class="text-slate-400">TanStack Table v8</span>
+    <div class="p-3 bg-white border-t-[3px] border-black text-xs font-mono font-bold uppercase flex items-center justify-between shrink-0">
+      <span>{{ table.getRowModel().rows.length }} AXES AFFICHÉS</span>
+      <span class="text-black/60">RAWBLOCK // MTQ</span>
     </div>
   </aside>
 </template>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import L from 'leaflet';
-import { Maximize2, Layers, BookOpen, Sparkles } from '@lucide/vue';
 import type { RouteInfo } from '../types/route';
 import { ROUTE_SECTIONS, type RouteSectionGroup } from '../utils/routeSections';
 
@@ -20,9 +19,9 @@ const emit = defineEmits<{
 const mapContainer = ref<HTMLDivElement | null>(null);
 let map: L.Map | null = null;
 let currentTileLayer: L.TileLayer | null = null;
-const polylinesMap = new Map<string, { main: L.Polyline; glow?: L.Polyline }>();
+const polylinesMap = new Map<string, { main: L.Polyline; casing?: L.Polyline }>();
 
-const isSatellite = ref(false);
+const isOsmLayer = ref(false);
 
 const QUEBEC_CENTER: L.LatLngTuple = [48.0, -70.5];
 const DEFAULT_ZOOM = 6;
@@ -38,34 +37,33 @@ function initMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  setTileLayer(isSatellite.value);
+  setTileLayer(isOsmLayer.value);
   renderRoutes();
 }
 
-function setTileLayer(satellite: boolean) {
+function setTileLayer(osm: boolean) {
   if (!map) return;
 
   if (currentTileLayer) {
     map.removeLayer(currentTileLayer);
   }
 
-  if (satellite) {
-    // OpenStreetMap Standard
+  if (osm) {
     currentTileLayer = L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '&copy; OpenStreetMap',
       }
     );
   } else {
-    // CartoDB Voyager (clean, high contrast for highways)
+    // Stark high-contrast light monochrome map (CartoDB Positron)
     currentTileLayer = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
       {
         maxZoom: 19,
         subdomains: 'abcd',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution: '&copy; OpenStreetMap &copy; CARTO',
       }
     );
   }
@@ -74,8 +72,8 @@ function setTileLayer(satellite: boolean) {
 }
 
 function toggleTileLayer() {
-  isSatellite.value = !isSatellite.value;
-  setTileLayer(isSatellite.value);
+  isOsmLayer.value = !isOsmLayer.value;
+  setTileLayer(isOsmLayer.value);
 }
 
 function renderRoutes() {
@@ -83,9 +81,9 @@ function renderRoutes() {
   if (!currentMap) return;
 
   // Clear existing polylines
-  polylinesMap.forEach(({ main, glow }) => {
+  polylinesMap.forEach(({ main, casing }) => {
     currentMap.removeLayer(main);
-    if (glow) currentMap.removeLayer(glow);
+    if (casing) currentMap.removeLayer(casing);
   });
   polylinesMap.clear();
 
@@ -95,59 +93,63 @@ function renderRoutes() {
     const latLngs = route.coordinates.map(c => L.latLng(c[0], c[1]));
     const isSelected = props.selectedRouteIds.includes(route.id);
 
-    // Normal or dim style
-    const defaultColor = route.category === 'autoroute' ? '#2563eb' : '#059669';
-    const weight = isSelected ? 6 : hasSelection ? 2.5 : 4;
-    const opacity = isSelected ? 1 : hasSelection ? 0.3 : 0.8;
+    // RawBlock stark polyline styling
+    const defaultColor = route.category === 'autoroute' ? '#000000' : '#444444';
+    const weight = isSelected ? 6 : hasSelection ? 2 : 3.5;
+    const opacity = isSelected ? 1 : hasSelection ? 0.25 : 0.85;
 
-    let glowPolyline: L.Polyline | undefined;
+    let casingPolyline: L.Polyline | undefined;
 
     if (isSelected) {
-      // Add glowing halo effect behind selected route
-      glowPolyline = L.polyline(latLngs, {
-        color: '#f59e0b',
-        weight: 12,
-        opacity: 0.55,
-        lineCap: 'round',
-        lineJoin: 'round',
+      // RawBlock high-contrast casing: 10px black underlay
+      casingPolyline = L.polyline(latLngs, {
+        color: '#000000',
+        weight: 11,
+        opacity: 1,
+        lineCap: 'square',
+        lineJoin: 'miter',
       }).addTo(currentMap);
     }
 
     const polyline = L.polyline(latLngs, {
-      color: isSelected ? '#ea580c' : defaultColor,
+      color: isSelected ? '#FF0000' : defaultColor,
       weight,
       opacity,
-      lineCap: 'round',
-      lineJoin: 'round',
+      lineCap: 'square',
+      lineJoin: 'miter',
     }).addTo(currentMap);
 
-    // Tooltip
+    // RawBlock Tooltip: inverted black box with Space Mono
     polyline.bindTooltip(
-      `<div class="font-semibold">${route.name}</div><div class="text-xs text-slate-500">${route.lengthKm} km (Cliquer pour sélectionner/désélectionner)</div>`,
+      `<div class="font-mono text-xs"><strong>${route.name.toUpperCase()}</strong><br/>[${route.number}] // ${route.lengthKm} KM</div>`,
       {
         sticky: true,
         direction: 'top',
-        className: 'custom-leaflet-tooltip shadow-sm rounded-md px-2 py-1',
+        className: 'custom-raw-tooltip',
       }
     );
 
-    // Popup
-    const badgeBg = route.category === 'autoroute' ? 'bg-blue-600' : 'bg-emerald-600';
-    const badgeLabel = route.category === 'autoroute' ? 'Autoroute' : 'Route';
+    // RawBlock Popup: stark black/white box, no rounding, 3px border
     const popupContent = `
-      <div class="p-2 text-slate-800 font-sans">
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="inline-block px-2 py-0.5 text-xs font-bold text-white rounded ${badgeBg}">
-            ${badgeLabel} ${route.number}
+      <div class="p-3 bg-white text-black font-mono border-[3px] border-black">
+        <div class="flex items-center gap-2 mb-2 pb-1 border-b-2 border-black">
+          <span class="bg-black text-white px-2 py-0.5 text-xs font-bold uppercase">
+            ${route.category === 'autoroute' ? 'AUTOROUTE' : 'ROUTE'} ${route.number}
           </span>
-          <h4 class="font-bold text-sm leading-tight">${route.name}</h4>
+          <span class="text-xs font-bold">${route.lengthKm} KM</span>
         </div>
-        <p class="text-xs text-slate-600 mb-1"><strong>Trajet:</strong> ${route.startPoint} → ${route.endPoint}</p>
-        <p class="text-xs text-slate-600 mb-2"><strong>Distance:</strong> ${route.lengthKm} km</p>
-        <p class="text-xs text-slate-500 leading-relaxed border-t pt-1">${route.description}</p>
+        <div class="text-xs font-bold uppercase mb-1" style="font-family: var(--font-headline)">
+          ${route.name}
+        </div>
+        <p class="text-[11px] text-black/80 mb-2 uppercase">
+          ${route.startPoint} → ${route.endPoint}
+        </p>
+        <p class="text-[10px] text-black/60 leading-relaxed border-t border-black/30 pt-1">
+          ${route.description}
+        </p>
       </div>
     `;
-    polyline.bindPopup(popupContent, { maxWidth: 300 });
+    polyline.bindPopup(popupContent, { maxWidth: 320 });
 
     // Events
     polyline.on('click', () => {
@@ -157,8 +159,9 @@ function renderRoutes() {
     polyline.on('mouseover', () => {
       if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
-          weight: hasSelection ? 4.5 : 5.5,
+          weight: hasSelection ? 4 : 5,
           opacity: 1,
+          color: '#000000',
         });
       }
     });
@@ -166,17 +169,19 @@ function renderRoutes() {
     polyline.on('mouseout', () => {
       if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
-          weight: hasSelection ? 2.5 : 4,
-          opacity: hasSelection ? 0.3 : 0.8,
+          weight: hasSelection ? 2 : 3.5,
+          opacity: hasSelection ? 0.25 : 0.85,
+          color: defaultColor,
         });
       }
     });
 
     if (isSelected) {
+      if (casingPolyline) casingPolyline.bringToFront();
       polyline.bringToFront();
     }
 
-    polylinesMap.set(route.id, { main: polyline, glow: glowPolyline });
+    polylinesMap.set(route.id, { main: polyline, casing: casingPolyline });
   });
 }
 
@@ -263,82 +268,68 @@ onUnmounted(() => {
 <template>
   <div class="relative w-full h-full">
     <!-- Map Container -->
-    <div ref="mapContainer" class="w-full h-full z-0 bg-slate-100"></div>
+    <div ref="mapContainer" class="w-full h-full z-0 bg-[#F0F0F0]"></div>
 
-    <!-- Floating Quick Type Selector Bar (Top Left) -->
+    <!-- Floating Quick Type Selector Bar (RawBlock Card) -->
     <div
-      class="absolute top-4 left-4 z-[500] max-w-[calc(100%-190px)] overflow-x-auto flex items-center gap-1.5 p-1.5 bg-white/95 backdrop-blur-xs rounded-xl shadow-md border border-slate-200 text-xs"
+      class="absolute top-4 left-4 z-[500] max-w-[calc(100%-200px)] overflow-x-auto flex items-center gap-1.5 p-2 bg-white border-[3px] border-black text-xs font-mono select-none"
     >
-      <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider pl-1.5 pr-0.5 shrink-0 flex items-center gap-1">
-        <Sparkles class="w-3.5 h-3.5 text-amber-500" />
-        <span class="hidden sm:inline">Sections MTQ :</span>
+      <span class="font-bold uppercase tracking-wider pl-1 pr-1 shrink-0">
+        [TYPES MTQ] :
       </span>
       <button
         v-for="sec in ROUTE_SECTIONS"
         :key="sec.id"
         @click="handleQuickSelectSection(sec)"
-        class="px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1 shrink-0 cursor-pointer"
+        class="px-2.5 py-1 border-2 border-black uppercase text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer"
         :class="[
           isSectionActive(sec)
-            ? 'bg-amber-500 text-white shadow-xs font-semibold ring-1 ring-amber-600'
-            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            ? 'bg-black text-white'
+            : 'bg-white text-black hover:bg-black hover:text-white'
         ]"
-        :title="sec.description"
       >
-        <span>{{ sec.shortLabel }}</span>
+        {{ sec.shortLabel }}
       </button>
     </div>
 
-    <!-- Floating Map Controls (Top Right) -->
+    <!-- Floating Map Controls (Top Right RawBlock Buttons) -->
     <div class="absolute top-4 right-4 z-[500] flex flex-col gap-2">
-      <!-- Guide Button -->
-      <button
-        @click="emit('openGuide')"
-        title="Comment sont numérotées les routes et autoroutes ?"
-        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all cursor-pointer"
-      >
-        <BookOpen class="w-3.5 h-3.5 text-blue-600" />
-        <span>Guide numérotation</span>
-      </button>
-
       <!-- Reset View to Quebec -->
       <button
         @click="resetView"
-        title="Vue d'ensemble du Québec"
-        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all cursor-pointer"
+        class="px-3 py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
       >
-        <Maximize2 class="w-3.5 h-3.5" />
-        <span>Tout le Québec</span>
+        VUE GÉNÉRALE
       </button>
 
       <!-- Toggle Tile Layer -->
       <button
         @click="toggleTileLayer"
-        title="Changer le style de carte"
-        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all cursor-pointer"
+        class="px-3 py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
       >
-        <Layers class="w-3.5 h-3.5" />
-        <span>{{ isSatellite ? 'Vue Voyager' : 'Vue OSM' }}</span>
+        {{ isOsmLayer ? 'CARTO POSITRON' : 'CARTO STANDARD' }}
       </button>
     </div>
 
-    <!-- Map Legend (Bottom Left) -->
+    <!-- Map Legend (RawBlock Default Card: white fill, 3px black border, square, no shadow) -->
     <div
-      class="absolute bottom-6 left-6 z-[500] bg-white/95 backdrop-blur-xs px-3.5 py-2.5 rounded-xl shadow-md border border-slate-200 text-xs space-y-2 pointer-events-auto"
+      class="absolute bottom-6 left-6 z-[500] bg-white border-[3px] border-black p-3 text-xs font-mono space-y-2 pointer-events-auto select-none"
     >
-      <div class="font-bold text-slate-800 text-[11px] uppercase tracking-wider">Légende</div>
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-1.5 rounded-full bg-blue-600 inline-block"></span>
-        <span class="text-slate-700 font-medium">Autoroutes (série 1 à 999)</span>
+      <div class="font-bold uppercase tracking-wider border-b-2 border-black pb-1">
+        LÉGENDE // CODES
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-4 h-1.5 rounded-full bg-emerald-600 inline-block"></span>
-        <span class="text-slate-700 font-medium">Routes Nationales (série 100+)</span>
+        <span class="w-4 h-2 bg-black border border-black inline-block"></span>
+        <span class="uppercase">Autoroutes (Série 1-999)</span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="w-4 h-2 rounded-full bg-orange-500 ring-2 ring-amber-400 inline-block"></span>
-        <span class="text-slate-700 font-medium">
-          {{ selectedRouteIds.length > 0 ? `${selectedRouteIds.length} sélectionnée(s)` : 'Sélectionnez une ou plusieurs routes' }}
+        <span class="w-4 h-2 bg-[#444444] border border-black inline-block"></span>
+        <span class="uppercase">Routes (Série 100+)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="w-4 h-2 bg-[#FF0000] border border-black inline-block"></span>
+        <span class="font-bold text-[#FF0000] uppercase">
+          {{ selectedRouteIds.length > 0 ? `ACTIVES (${selectedRouteIds.length})` : 'SÉLECTION' }}
         </span>
       </div>
     </div>
