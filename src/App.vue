@@ -4,6 +4,7 @@ import { useRoutes } from './composables/useRoutes';
 import Navbar from './components/Navbar.vue';
 import RouteSidebar from './components/RouteSidebar.vue';
 import MapView from './components/MapView.vue';
+import NumberingGuideModal from './components/NumberingGuideModal.vue';
 
 const { data: routesData, isLoading, error } = useRoutes();
 
@@ -11,6 +12,7 @@ const routes = computed(() => routesData.value ?? []);
 
 const selectedRouteIds = ref<string[]>([]);
 const isSidebarOpen = ref(true);
+const isGuideOpen = ref(false);
 
 const totalDistanceKm = computed(() => {
   return routes.value.reduce((acc, r) => acc + r.lengthKm, 0);
@@ -55,6 +57,7 @@ function toggleSidebar() {
       :selected-distance-km="selectedDistanceKm"
       @toggle-sidebar="toggleSidebar"
       @clear-selection="handleClearSelection"
+      @open-guide="isGuideOpen = true"
     />
 
     <!-- Main Content (Sidebar + Map) -->
@@ -92,8 +95,15 @@ function toggleSidebar() {
           :selected-route-ids="selectedRouteIds"
           @toggle-route="handleToggleRoute"
           @clear-selection="handleClearSelection"
+          @open-guide="isGuideOpen = true"
         />
       </main>
     </div>
+
+    <!-- Numbering System Guide Modal -->
+    <NumberingGuideModal
+      :is-open="isGuideOpen"
+      @close="isGuideOpen = false"
+    />
   </div>
 </template>

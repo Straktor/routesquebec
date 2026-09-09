@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import L from 'leaflet';
-import { Maximize2, Layers } from '@lucide/vue';
+import { Maximize2, Layers, BookOpen } from '@lucide/vue';
 import type { RouteInfo } from '../types/route';
 
 const props = defineProps<{
@@ -12,6 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'toggleRoute', id: string): void;
   (e: 'clearSelection'): void;
+  (e: 'openGuide'): void;
 }>();
 
 const mapContainer = ref<HTMLDivElement | null>(null);
@@ -248,6 +249,16 @@ onUnmounted(() => {
 
     <!-- Floating Map Controls -->
     <div class="absolute top-4 right-4 z-[500] flex flex-col gap-2">
+      <!-- Guide Button -->
+      <button
+        @click="emit('openGuide')"
+        title="Comment sont numérotées les routes et autoroutes ?"
+        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all cursor-pointer"
+      >
+        <BookOpen class="w-3.5 h-3.5 text-blue-600" />
+        <span>Guide numérotation</span>
+      </button>
+
       <!-- Reset View to Quebec -->
       <button
         @click="resetView"
