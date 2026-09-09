@@ -31,9 +31,11 @@ const props = withDefaults(
     selectedRouteIds: string[];
     isLoading?: boolean;
     activeTab?: 'routes' | 'nomenclature';
+    isGuideOpen?: boolean;
   }>(),
   {
     activeTab: 'routes',
+    isGuideOpen: false,
   }
 );
 
@@ -276,7 +278,12 @@ function getSectionIcon(iconName: string) {
         <button
           @click="emit('openGuide')"
           title="Guide officiel MTQ"
-          class="w-full h-12 flex flex-col items-center justify-center text-[#888888] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+          :class="[
+            'w-full h-12 flex flex-col items-center justify-center transition-colors cursor-pointer',
+            isGuideOpen
+              ? 'text-white border-l-[3px] border-white bg-[#252526]'
+              : 'text-[#888888] hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
+          ]"
         >
           <BookOpen :size="18" />
           <span class="text-[8px] font-mono font-bold mt-0.5 tracking-tighter">GUIDE</span>

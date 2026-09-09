@@ -28,11 +28,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div
-      v-if="isOpen"
-      class="fixed inset-0 z-[9999] w-screen h-screen bg-[#FBFBFB] flex flex-col select-none overflow-hidden"
-    >
+  <div
+    v-if="isOpen"
+    class="w-full h-full bg-[#FBFBFB] flex flex-col select-none overflow-hidden relative z-30"
+  >
       <!-- Full-Screen Header -->
       <div class="px-4 sm:px-8 py-3.5 sm:py-4 bg-black text-white flex items-center justify-between border-b-[4px] border-black shrink-0 pt-safe">
         <div class="min-w-0 pr-2">
@@ -554,5 +553,4 @@ onUnmounted(() => {
         </button>
       </div>
     </div>
-  </Teleport>
 </template>

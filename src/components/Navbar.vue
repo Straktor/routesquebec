@@ -5,6 +5,7 @@ defineProps<{
   totalDistanceKm: number;
   selectedCount: number;
   selectedDistanceKm: number;
+  isGuideOpen?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -75,9 +76,14 @@ const emit = defineEmits<{
       <!-- Numbering Guide Button (Desktop only; mobile uses bottom app bar) -->
       <button
         @click="emit('openGuide')"
-        class="hidden md:flex items-center h-10 px-4 bg-black hover:bg-white text-white hover:text-black border-[3px] border-black font-mono text-xs font-bold uppercase tracking-[2px] transition-colors cursor-pointer"
+        :class="[
+          'hidden md:flex items-center h-10 px-4 border-[3px] border-black font-mono text-xs font-bold uppercase tracking-[2px] transition-colors cursor-pointer',
+          isGuideOpen
+            ? 'bg-black text-white hover:bg-white hover:text-black ring-2 ring-black'
+            : 'bg-white text-black hover:bg-black hover:text-white'
+        ]"
       >
-        GUIDE MTQ
+        <span>{{ isGuideOpen ? '[FERMER GUIDE]' : 'GUIDE MTQ' }}</span>
       </button>
     </div>
   </header>

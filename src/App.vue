@@ -57,9 +57,31 @@ function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
 
-function openMobileTab(tab: 'routes' | 'nomenclature') {
+function toggleGuide() {
+  isGuideOpen.value = !isGuideOpen.value;
+}
+
+function handleSidebarTabChange(tab: 'routes' | 'nomenclature') {
   activeTab.value = tab;
-  isSidebarOpen.value = true;
+  isGuideOpen.value = false;
+}
+
+function openMobileTab(tab: 'carte' | 'routes' | 'nomenclature' | 'guide') {
+  if (tab === 'carte') {
+    isGuideOpen.value = false;
+    isSidebarOpen.value = false;
+  } else if (tab === 'routes') {
+    isGuideOpen.value = false;
+    isSidebarOpen.value = true;
+    activeTab.value = 'routes';
+  } else if (tab === 'nomenclature') {
+    isGuideOpen.value = false;
+    isSidebarOpen.value = true;
+    activeTab.value = 'nomenclature';
+  } else if (tab === 'guide') {
+    isGuideOpen.value = true;
+    isSidebarOpen.value = false;
+  }
 }
 </script>
 
@@ -72,12 +94,13 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
       :total-distance-km="totalDistanceKm"
       :selected-count="selectedRouteIds.length"
       :selected-distance-km="selectedDistanceKm"
+      :is-guide-open="isGuideOpen"
       @toggle-sidebar="toggleSidebar"
       @clear-selection="handleClearSelection"
-      @open-guide="isGuideOpen = true"
+      @open-guide="toggleGuide"
     />
 
-    <!-- Main Content (Sidebar + Map) -->
+    <!-- Main Content (Sidebar + Map / Guide) -->
     <div class="flex flex-1 relative overflow-hidden bg-white">
       <!-- Sidebar container with responsive sliding -->
       <div
@@ -90,26 +113,28 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
       >
         <RouteSidebar
           v-show="isSidebarOpen"
-          v-model:active-tab="activeTab"
+          :active-tab="activeTab"
           :routes="routes"
           :selected-route-ids="selectedRouteIds"
           :is-loading="isLoading"
+          :is-guide-open="isGuideOpen"
           class="flex-1 min-h-0"
+          @update:active-tab="handleSidebarTabChange"
           @toggle-route="handleToggleRoute"
           @select-all="handleSelectAll"
           @clear-selection="handleClearSelection"
           @set-selection="handleSetSelection"
-          @open-guide="isGuideOpen = true"
+          @open-guide="toggleGuide"
           @close="isSidebarOpen = false"
         />
 
-        <!-- Mobile Floating Sticky Switch to Map when routes are selected -->
+        <!-- Mobile Floating Sticky Switch to Map when routes are active -->
         <div
           v-if="isSidebarOpen && selectedRouteIds.length > 0"
           class="md:hidden p-2.5 bg-black text-white border-t-[3px] border-black shrink-0"
         >
           <button
-            @click="isSidebarOpen = false"
+            @click="isSidebarOpen = false; isGuideOpen = false"
             class="w-full py-2.5 px-3 bg-white hover:bg-black text-black hover:text-white border-[2px] border-white font-mono text-xs font-bold uppercase tracking-[1px] transition-colors cursor-pointer text-center flex items-center justify-center gap-2"
           >
             <span>VOIR SUR LA CARTE</span>
@@ -119,7 +144,7 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
         </div>
       </div>
 
-      <!-- Map Container -->
+      <!-- Main Canvas Container: Map or Guide View -->
       <main class="flex-1 h-full relative overflow-hidden bg-[#F0F0F0]">
         <!-- Error Banner -->
         <div
@@ -129,14 +154,24 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
           [ERREUR SYSTÈME] {{ error.message }}
         </div>
 
-        <MapView
-          :routes="routes"
-          :selected-route-ids="selectedRouteIds"
-          :is-sidebar-open="isSidebarOpen"
-          @toggle-route="handleToggleRoute"
-          @clear-selection="handleClearSelection"
-          @set-selection="handleSetSelection"
-          @open-guide="isGuideOpen = true"
+        <!-- Map View (kept active, hidden when guide is open) -->
+        <div v-show="!isGuideOpen" class="w-full h-full relative">
+          <MapView
+            :routes="routes"
+            :selected-route-ids="selectedRouteIds"
+            :is-sidebar-open="isSidebarOpen"
+            @toggle-route="handleToggleRoute"
+            @clear-selection="handleClearSelection"
+            @set-selection="handleSetSelection"
+            @open-guide="isGuideOpen = true"
+          />
+        </div>
+
+        <!-- Full-view Guide (replaces map area, keeping side menu and navbar visible) -->
+        <NumberingGuideModal
+          v-if="isGuideOpen"
+          :is-open="isGuideOpen"
+          @close="isGuideOpen = false"
         />
       </main>
     </div>
@@ -147,10 +182,10 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
     >
       <!-- CARTE Tab -->
       <button
-        @click="isSidebarOpen = false"
+        @click="openMobileTab('carte')"
         :class="[
           'flex-1 h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer border-t-[3px]',
-          !isSidebarOpen
+          !isGuideOpen && !isSidebarOpen
             ? 'bg-[#252526] text-white border-[#0055FF]'
             : 'text-[#888888] border-transparent hover:text-white'
         ]"
@@ -158,7 +193,7 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
         <MapIcon :size="18" />
         <span class="text-[9px] font-mono font-bold mt-0.5 tracking-wider uppercase">CARTE</span>
         <span
-          v-if="selectedRouteIds.length > 0 && !isSidebarOpen"
+          v-if="selectedRouteIds.length > 0 && !isGuideOpen && !isSidebarOpen"
           class="absolute top-1.5 right-1/4 translate-x-2 px-1 py-0.2 bg-[#FFA500] text-black font-mono text-[8px] font-bold border border-black"
         >
           {{ selectedRouteIds.length }}
@@ -170,7 +205,7 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
         @click="openMobileTab('routes')"
         :class="[
           'flex-1 h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer border-t-[3px]',
-          isSidebarOpen && activeTab === 'routes'
+          !isGuideOpen && isSidebarOpen && activeTab === 'routes'
             ? 'bg-[#252526] text-white border-[#0055FF]'
             : 'text-[#888888] border-transparent hover:text-white'
         ]"
@@ -190,7 +225,7 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
         @click="openMobileTab('nomenclature')"
         :class="[
           'flex-1 h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer border-t-[3px]',
-          isSidebarOpen && activeTab === 'nomenclature'
+          !isGuideOpen && isSidebarOpen && activeTab === 'nomenclature'
             ? 'bg-[#252526] text-white border-[#0055FF]'
             : 'text-[#888888] border-transparent hover:text-white'
         ]"
@@ -201,18 +236,17 @@ function openMobileTab(tab: 'routes' | 'nomenclature') {
 
       <!-- GUIDE Tab -->
       <button
-        @click="isGuideOpen = true"
-        class="flex-1 h-13 flex flex-col items-center justify-center relative text-[#888888] hover:text-white border-t-[3px] border-transparent transition-colors cursor-pointer"
+        @click="openMobileTab('guide')"
+        :class="[
+          'flex-1 h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer border-t-[3px]',
+          isGuideOpen
+            ? 'bg-[#252526] text-white border-[#0055FF]'
+            : 'text-[#888888] border-transparent hover:text-white'
+        ]"
       >
         <BookOpen :size="18" />
         <span class="text-[9px] font-mono font-bold mt-0.5 tracking-wider uppercase">GUIDE</span>
       </button>
     </nav>
-
-    <!-- Numbering System Guide Modal -->
-    <NumberingGuideModal
-      :is-open="isGuideOpen"
-      @close="isGuideOpen = false"
-    />
   </div>
 </template>
