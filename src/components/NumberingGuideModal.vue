@@ -31,96 +31,87 @@ onUnmounted(() => {
   <Teleport to="body">
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 md:p-6 select-none"
+      class="fixed inset-0 z-[9999] w-screen h-screen bg-[#FBFBFB] flex flex-col select-none overflow-hidden"
     >
-      <!-- Modal Backdrop -->
-      <div
-        @click="emit('close')"
-        class="fixed inset-0 bg-black/80 transition-opacity"
-      ></div>
-
-      <!-- Modal Card -->
-      <div
-        class="relative w-full max-w-4xl bg-white border-[5px] border-black overflow-hidden flex flex-col max-h-[94vh] z-10"
-      >
-        <!-- Header -->
-        <div class="px-4 sm:px-6 py-3.5 bg-black text-white flex items-center justify-between border-b-[3px] border-black shrink-0">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-1.5 py-0.5 bg-white text-black font-mono font-black text-[10px] uppercase">
-                DOC // MTQ
-              </span>
-              <h2
-                class="text-base sm:text-xl font-black uppercase tracking-tight"
-                style="font-family: var(--font-headline)"
-              >
-                GUIDE DE NUMÉROTATION DU RÉSEAU ROUTIER
-              </h2>
-            </div>
-            <p class="text-[11px] sm:text-xs font-mono text-white/70 tracking-tight mt-0.5">
-              STANDARDS OFFICIELS DU MINISTÈRE DES TRANSPORTS DU QUÉBEC
-            </p>
+      <!-- Full-Screen Header -->
+      <div class="px-4 sm:px-8 py-3.5 sm:py-4 bg-black text-white flex items-center justify-between border-b-[4px] border-black shrink-0 pt-safe">
+        <div class="min-w-0 pr-2">
+          <div class="flex items-center gap-2 sm:gap-3">
+            <span class="px-1.5 py-0.5 bg-white text-black font-mono font-black text-[10px] sm:text-xs uppercase shrink-0">
+              DOC // MTQ
+            </span>
+            <h2
+              class="text-sm sm:text-2xl font-black uppercase tracking-tight truncate"
+              style="font-family: var(--font-headline)"
+            >
+              GUIDE DE NUMÉROTATION DU RÉSEAU ROUTIER
+            </h2>
           </div>
-          <button
-            @click="emit('close')"
-            class="px-2.5 py-1 bg-white hover:bg-[#FF0000] text-black hover:text-white border-2 border-white font-mono text-xs font-bold uppercase transition-colors cursor-pointer"
-            title="Fermer (Échap)"
-          >
-            [X]
-          </button>
+          <p class="text-[10px] sm:text-xs font-mono text-white/70 tracking-tight mt-0.5 truncate hidden sm:block">
+            STANDARDS OFFICIELS DU MINISTÈRE DES TRANSPORTS DU QUÉBEC
+          </p>
         </div>
+        <button
+          @click="emit('close')"
+          class="px-3 sm:px-5 py-1.5 sm:py-2 bg-white hover:bg-[#FF0000] text-black hover:text-white border-[2px] sm:border-[3px] border-white font-mono text-xs sm:text-sm font-bold uppercase transition-colors cursor-pointer shrink-0"
+          title="Fermer le guide (Échap)"
+        >
+          [RETOUR ✕]
+        </button>
+      </div>
 
-        <!-- Navigation Tabs -->
-        <div class="flex flex-wrap items-center gap-1 p-2 sm:px-6 bg-[#E5E5E5] border-b-[3px] border-black text-xs font-mono font-bold shrink-0">
-          <button
-            @click="activeTab = 'all'"
-            :class="[
-              'px-2.5 py-1 border-2 border-black uppercase text-[11px] transition-colors cursor-pointer',
-              activeTab === 'all' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
-            ]"
-          >
-            TOUT VOIR
-          </button>
-          <button
-            @click="activeTab = 'orientation'"
-            :class="[
-              'px-2.5 py-1 border-2 border-black uppercase text-[11px] transition-colors cursor-pointer',
-              activeTab === 'orientation' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
-            ]"
-          >
-            1. ORIENTATION & FLEUVE
-          </button>
-          <button
-            @click="activeTab = 'autoroutes'"
-            :class="[
-              'px-2.5 py-1 border-2 border-black uppercase text-[11px] transition-colors cursor-pointer',
-              activeTab === 'autoroutes' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
-            ]"
-          >
-            2. AUTOROUTES (1-999)
-          </button>
-          <button
-            @click="activeTab = 'routes'"
-            :class="[
-              'px-2.5 py-1 border-2 border-black uppercase text-[11px] transition-colors cursor-pointer',
-              activeTab === 'routes' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
-            ]"
-          >
-            3. ROUTES (100, 200, 300)
-          </button>
-          <button
-            @click="activeTab = 'signaux'"
-            :class="[
-              'px-2.5 py-1 border-2 border-black uppercase text-[11px] transition-colors cursor-pointer',
-              activeTab === 'signaux' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
-            ]"
-          >
-            4. BOUCLIERS & SORTIES
-          </button>
-        </div>
+      <!-- Navigation Tabs -->
+      <div class="flex items-center gap-1.5 px-4 sm:px-8 py-2.5 bg-[#E5E5E5] border-b-[3px] border-black text-xs font-mono font-bold shrink-0 overflow-x-auto">
+        <button
+          @click="activeTab = 'all'"
+          :class="[
+            'px-3 py-1 border-2 border-black uppercase text-[11px] sm:text-xs transition-colors cursor-pointer whitespace-nowrap',
+            activeTab === 'all' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          TOUT VOIR
+        </button>
+        <button
+          @click="activeTab = 'orientation'"
+          :class="[
+            'px-3 py-1 border-2 border-black uppercase text-[11px] sm:text-xs transition-colors cursor-pointer whitespace-nowrap',
+            activeTab === 'orientation' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          1. ORIENTATION & FLEUVE
+        </button>
+        <button
+          @click="activeTab = 'autoroutes'"
+          :class="[
+            'px-3 py-1 border-2 border-black uppercase text-[11px] sm:text-xs transition-colors cursor-pointer whitespace-nowrap',
+            activeTab === 'autoroutes' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          2. AUTOROUTES (1-999)
+        </button>
+        <button
+          @click="activeTab = 'routes'"
+          :class="[
+            'px-3 py-1 border-2 border-black uppercase text-[11px] sm:text-xs transition-colors cursor-pointer whitespace-nowrap',
+            activeTab === 'routes' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          3. ROUTES (100, 200, 300)
+        </button>
+        <button
+          @click="activeTab = 'signaux'"
+          :class="[
+            'px-3 py-1 border-2 border-black uppercase text-[11px] sm:text-xs transition-colors cursor-pointer whitespace-nowrap',
+            activeTab === 'signaux' ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          4. BOUCLIERS & SORTIES
+        </button>
+      </div>
 
-        <!-- Body Scrollable Content -->
-        <div class="p-4 sm:p-6 overflow-y-auto space-y-8 text-black text-sm">
+      <!-- Body Scrollable Content (Full-Screen) -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+        <div class="max-w-6xl mx-auto space-y-8 text-black text-sm">
 
           <!-- ======================================================== -->
           <!-- SECTION 1: ORIENTATION (PAIRS VS IMPAIRS)                 -->
@@ -548,19 +539,19 @@ onUnmounted(() => {
           </div>
 
         </div>
+      </div>
 
-        <!-- Footer -->
-        <div class="px-4 sm:px-6 py-3 bg-[#F0F0F0] border-t-[3px] border-black flex items-center justify-between font-mono text-xs shrink-0">
-          <span class="text-black/70 uppercase text-[10px] sm:text-xs">
-            SOURCE : DIRECTION DU RÉSEAU DU MINISTÈRE DES TRANSPORTS ET DE LA MOBILITÉ DURABLE
-          </span>
-          <button
-            @click="emit('close')"
-            class="px-5 py-1.5 sm:py-2 bg-black hover:bg-white text-white hover:text-black border-[3px] border-black font-bold uppercase tracking-[2px] transition-colors cursor-pointer text-xs"
-          >
-            FERMER
-          </button>
-        </div>
+      <!-- Footer -->
+      <div class="px-4 sm:px-8 py-3 bg-[#F0F0F0] border-t-[3px] border-black flex items-center justify-between font-mono text-xs shrink-0 pb-safe">
+        <span class="text-black/70 uppercase text-[10px] sm:text-xs truncate mr-2">
+          SOURCE : DIRECTION DU RÉSEAU DU MINISTÈRE DES TRANSPORTS ET DE LA MOBILITÉ DURABLE
+        </span>
+        <button
+          @click="emit('close')"
+          class="px-5 py-2 bg-black hover:bg-white text-white hover:text-black border-[3px] border-black font-bold uppercase tracking-[2px] transition-colors cursor-pointer text-xs shrink-0"
+        >
+          RETOUR À LA CARTE
+        </button>
       </div>
     </div>
   </Teleport>
