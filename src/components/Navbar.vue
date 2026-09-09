@@ -15,16 +15,15 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <header class="h-14 sm:h-16 bg-white text-black border-b-[4px] sm:border-b-[5px] border-black flex items-center justify-between px-3 sm:px-6 z-40 shrink-0 select-none">
+  <header class="min-h-14 sm:min-h-16 pt-safe bg-white text-black border-b-[4px] sm:border-b-[5px] border-black flex items-center justify-between px-3 sm:px-6 z-40 shrink-0 select-none">
     <div class="flex items-center gap-2 sm:gap-4 min-w-0">
-      <!-- Sidebar / Map Toggle Button -->
+      <!-- Desktop Sidebar / Map Toggle Button -->
       <button
         @click="emit('toggleSidebar')"
-        class="h-9 sm:h-10 px-2 sm:px-3 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shrink-0"
-        :title="isSidebarOpen ? 'Voir la carte' : 'Ouvrir la liste'"
+        class="hidden md:flex items-center h-10 px-3 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black font-mono text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shrink-0"
+        :title="isSidebarOpen ? 'Fermer le panneau' : 'Ouvrir la liste'"
       >
-        <span class="sm:hidden">{{ isSidebarOpen ? '[CARTE]' : '[LISTE]' }}</span>
-        <span class="hidden sm:inline">{{ isSidebarOpen ? '[← FERMER]' : '[LISTE →]' }}</span>
+        <span>{{ isSidebarOpen ? '[← FERMER]' : '[LISTE →]' }}</span>
       </button>
 
       <!-- App Title -->
@@ -73,13 +72,12 @@ const emit = defineEmits<{
         <span>{{ totalDistanceKm.toLocaleString() }} KM</span>
       </div>
 
-      <!-- Numbering Guide Button -->
+      <!-- Numbering Guide Button (Desktop only; mobile uses bottom app bar) -->
       <button
         @click="emit('openGuide')"
-        class="h-9 sm:h-10 px-2.5 sm:px-4 bg-black hover:bg-white text-white hover:text-black border-[3px] border-black font-mono text-[11px] sm:text-xs font-bold uppercase tracking-[1px] sm:tracking-[2px] transition-colors cursor-pointer"
+        class="hidden md:flex items-center h-10 px-4 bg-black hover:bg-white text-white hover:text-black border-[3px] border-black font-mono text-xs font-bold uppercase tracking-[2px] transition-colors cursor-pointer"
       >
-        <span class="sm:hidden">GUIDE</span>
-        <span class="hidden sm:inline">GUIDE MTQ</span>
+        GUIDE MTQ
       </button>
     </div>
   </header>

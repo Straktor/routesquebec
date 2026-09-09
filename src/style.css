@@ -23,6 +23,10 @@
     background-color: #ffffff;
     color: #000000;
     font-family: var(--font-body);
+    overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
 
   h1, h2, h3 {
@@ -39,6 +43,14 @@
     color: #0000FF;
     text-decoration: underline;
   }
+}
+
+/* Safe area support for notch and home indicator in PWA */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Brutalist Scrollbar */

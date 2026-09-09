@@ -287,6 +287,15 @@ watch(
   { deep: true }
 );
 
+watch(
+  () => props.isSidebarOpen,
+  () => {
+    setTimeout(() => {
+      map?.invalidateSize();
+    }, 220);
+  }
+);
+
 onMounted(() => {
   initMap();
 });

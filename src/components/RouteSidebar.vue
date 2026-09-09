@@ -25,11 +25,17 @@ import {
 import type { RouteCategory, RouteInfo } from '../types/route';
 import { ROUTE_SECTIONS, type RouteSectionGroup, getRouteTypeInfo } from '../utils/routeSections';
 
-const props = defineProps<{
-  routes: RouteInfo[];
-  selectedRouteIds: string[];
-  isLoading?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    routes: RouteInfo[];
+    selectedRouteIds: string[];
+    isLoading?: boolean;
+    activeTab?: 'routes' | 'nomenclature';
+  }>(),
+  {
+    activeTab: 'routes',
+  }
+);
 
 const emit = defineEmits<{
   (e: 'toggleRoute', id: string): void;
@@ -37,10 +43,15 @@ const emit = defineEmits<{
   (e: 'clearSelection'): void;
   (e: 'setSelection', ids: string[]): void;
   (e: 'openGuide'): void;
+  (e: 'update:activeTab', tab: 'routes' | 'nomenclature'): void;
+  (e: 'close'): void;
 }>();
 
 // Tab state: 'routes' (Explorer) vs 'nomenclature' (Groups)
-const activeTab = ref<'routes' | 'nomenclature'>('routes');
+const activeTab = computed({
+  get: () => props.activeTab,
+  set: (val: 'routes' | 'nomenclature') => emit('update:activeTab', val),
+});
 
 // Tab 1: Route Explorer state
 const selectedCategory = ref<'all' | RouteCategory>('all');
@@ -213,8 +224,8 @@ function getSectionIcon(iconName: string) {
 
 <template>
   <aside class="flex h-full bg-white border-r-[5px] border-black select-none overflow-hidden">
-    <!-- VS CODE ACTIVITY BAR (Vertical Strip on the left) -->
-    <div class="w-[52px] bg-[#181818] text-[#CCCCCC] flex flex-col items-center justify-between py-2 border-r-[3px] border-black shrink-0 z-10">
+    <!-- VS CODE ACTIVITY BAR (Desktop only: vertical strip on the left) -->
+    <div class="hidden md:flex w-[52px] bg-[#181818] text-[#CCCCCC] flex-col items-center justify-between py-2 border-r-[3px] border-black shrink-0 z-10">
       <!-- Top View Tabs -->
       <div class="flex flex-col w-full items-center gap-1">
         <!-- Tab 1: Routes Explorer -->
@@ -275,9 +286,10 @@ function getSectionIcon(iconName: string) {
 
     <!-- MAIN SIDEBAR CONTENT PANEL -->
     <div class="flex-1 flex flex-col min-w-0 bg-white h-full overflow-hidden">
-      <!-- VS Code Top Tab Header Bar -->
+      <!-- Top Tab Header Bar -->
       <div class="h-10 bg-[#EFEFEF] border-b-[3px] border-black flex items-center justify-between px-3 shrink-0">
-        <div class="flex items-center gap-1 font-mono text-[11px] font-bold tracking-wider">
+        <!-- Desktop: VS Code style tab headers -->
+        <div class="hidden md:flex items-center gap-1 font-mono text-[11px] font-bold tracking-wider">
           <button
             @click="activeTab = 'routes'"
             :class="[
@@ -302,7 +314,21 @@ function getSectionIcon(iconName: string) {
           </button>
         </div>
 
-        <span class="text-[10px] font-mono font-bold text-black/50 hidden sm:inline uppercase">
+        <!-- Mobile: Native App View Title & Close Action -->
+        <div class="md:hidden flex items-center justify-between w-full font-mono text-xs font-bold">
+          <span class="uppercase tracking-wider flex items-center gap-2">
+            <span class="inline-block w-2.5 h-2.5 bg-black"></span>
+            {{ activeTab === 'routes' ? `ROUTES (${table.getRowModel().rows.length}/${routes.length})` : `GROUPES MTQ (${ROUTE_SECTIONS.length})` }}
+          </span>
+          <button
+            @click="emit('close')"
+            class="px-2 py-1 bg-black hover:bg-black/80 text-white font-mono text-[10px] uppercase font-bold tracking-wider cursor-pointer border border-black"
+          >
+            [X CARTE]
+          </button>
+        </div>
+
+        <span class="text-[10px] font-mono font-bold text-black/50 hidden md:inline uppercase">
           {{ activeTab === 'routes' ? `${table.getRowModel().rows.length} AFFICHÉES` : '3 FAMILLES' }}
         </span>
       </div>
