@@ -69,8 +69,10 @@ function toggleSidebar() {
       <!-- Sidebar container with responsive sliding -->
       <div
         :class="[
-          'transition-all duration-200 ease-linear z-20 shrink-0 h-full',
-          isSidebarOpen ? 'w-full sm:w-96 md:w-[440px]' : 'w-0 overflow-hidden'
+          'transition-all duration-200 ease-linear z-30 shrink-0 h-full flex flex-col',
+          isSidebarOpen
+            ? 'absolute inset-0 md:relative md:w-[440px] w-full bg-white'
+            : 'w-0 overflow-hidden'
         ]"
       >
         <RouteSidebar
@@ -78,11 +80,25 @@ function toggleSidebar() {
           :routes="routes"
           :selected-route-ids="selectedRouteIds"
           :is-loading="isLoading"
+          class="flex-1 min-h-0"
           @toggle-route="handleToggleRoute"
           @select-all="handleSelectAll"
           @clear-selection="handleClearSelection"
           @set-selection="handleSetSelection"
         />
+
+        <!-- Mobile Floating Sticky Switch to Map -->
+        <div
+          v-if="isSidebarOpen"
+          class="md:hidden p-3 bg-black text-white border-t-[3px] border-black shrink-0"
+        >
+          <button
+            @click="isSidebarOpen = false"
+            class="w-full py-2.5 px-4 bg-white hover:bg-black text-black hover:text-white border-[3px] border-white font-mono text-xs font-bold uppercase tracking-[2px] transition-colors cursor-pointer text-center"
+          >
+            VOIR SUR LA CARTE {{ selectedRouteIds.length > 0 ? `(${selectedRouteIds.length})` : '' }} →
+          </button>
+        </div>
       </div>
 
       <!-- Map Container -->

@@ -22,6 +22,7 @@ let currentTileLayer: L.TileLayer | null = null;
 const polylinesMap = new Map<string, { main: L.Polyline; casing?: L.Polyline }>();
 
 const isOsmLayer = ref(false);
+const isLegendOpen = ref(false);
 
 const QUEBEC_CENTER: L.LatLngTuple = [48.0, -70.5];
 const DEFAULT_ZOOM = 6;
@@ -207,7 +208,7 @@ function updateHighlight(shouldFitBounds: boolean = true) {
 
     if (combinedBounds) {
       map.fitBounds(combinedBounds, {
-        padding: [60, 60],
+        padding: [40, 40],
         maxZoom: 10,
         animate: true,
       });
@@ -266,22 +267,22 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative w-full h-full">
+  <div class="relative w-full h-full overflow-hidden">
     <!-- Map Container -->
     <div ref="mapContainer" class="w-full h-full z-0 bg-[#F0F0F0]"></div>
 
     <!-- Floating Quick Type Selector Bar (RawBlock Card) -->
     <div
-      class="absolute top-4 left-4 z-[500] max-w-[calc(100%-200px)] overflow-x-auto flex items-center gap-1.5 p-2 bg-white border-[3px] border-black text-xs font-mono select-none"
+      class="absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-[500] sm:max-w-[calc(100%-220px)] overflow-x-auto flex items-center gap-1.5 p-1.5 sm:p-2 bg-white border-[3px] border-black text-xs font-mono select-none"
     >
-      <span class="font-bold uppercase tracking-wider pl-1 pr-1 shrink-0">
-        [TYPES MTQ] :
+      <span class="font-bold uppercase tracking-wider pl-1 pr-1 shrink-0 text-[10px] sm:text-xs">
+        TYPES MTQ :
       </span>
       <button
         v-for="sec in ROUTE_SECTIONS"
         :key="sec.id"
         @click="handleQuickSelectSection(sec)"
-        class="px-2.5 py-1 border-2 border-black uppercase text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer"
+        class="px-2 py-1 border-2 border-black uppercase text-[10px] sm:text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer"
         :class="[
           isSectionActive(sec)
             ? 'bg-black text-white'
@@ -293,11 +294,11 @@ onUnmounted(() => {
     </div>
 
     <!-- Floating Map Controls (Top Right RawBlock Buttons) -->
-    <div class="absolute top-4 right-4 z-[500] flex flex-col gap-2">
+    <div class="absolute top-14 sm:top-4 right-2 sm:right-4 z-[500] flex flex-col gap-1.5 sm:gap-2">
       <!-- Reset View to Quebec -->
       <button
         @click="resetView"
-        class="px-3 py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
+        class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
       >
         VUE GÉNÉRALE
       </button>
@@ -305,32 +306,46 @@ onUnmounted(() => {
       <!-- Toggle Tile Layer -->
       <button
         @click="toggleTileLayer"
-        class="px-3 py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
+        class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
       >
         {{ isOsmLayer ? 'CARTO POSITRON' : 'CARTO STANDARD' }}
       </button>
     </div>
 
-    <!-- Map Legend (RawBlock Default Card: white fill, 3px black border, square, no shadow) -->
-    <div
-      class="absolute bottom-6 left-6 z-[500] bg-white border-[3px] border-black p-3 text-xs font-mono space-y-2 pointer-events-auto select-none"
-    >
-      <div class="font-bold uppercase tracking-wider border-b-2 border-black pb-1">
-        LÉGENDE // CODES
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-2 bg-black border border-black inline-block"></span>
-        <span class="uppercase">Autoroutes (Série 1-999)</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-2 bg-[#444444] border border-black inline-block"></span>
-        <span class="uppercase">Routes (Série 100+)</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="w-4 h-2 bg-[#FF0000] border border-black inline-block"></span>
-        <span class="font-bold text-[#FF0000] uppercase">
-          {{ selectedRouteIds.length > 0 ? `ACTIVES (${selectedRouteIds.length})` : 'SÉLECTION' }}
-        </span>
+    <!-- Map Legend (Collapsible on mobile, permanent on desktop) -->
+    <div class="absolute bottom-4 left-2 sm:bottom-6 sm:left-6 z-[500] pointer-events-auto select-none">
+      <!-- Toggle button for mobile -->
+      <button
+        @click="isLegendOpen = !isLegendOpen"
+        class="sm:hidden mb-1 px-2 py-1 bg-white text-black border-[2px] border-black font-mono text-[10px] font-bold uppercase cursor-pointer"
+      >
+        {{ isLegendOpen ? '[FERMER LÉGENDE]' : '[LÉGENDE]' }}
+      </button>
+
+      <!-- Legend Body -->
+      <div
+        :class="[
+          'bg-white border-[3px] border-black p-2.5 sm:p-3 text-[11px] sm:text-xs font-mono space-y-1.5 sm:space-y-2',
+          isLegendOpen ? 'block' : 'hidden sm:block'
+        ]"
+      >
+        <div class="font-bold uppercase tracking-wider border-b-2 border-black pb-1">
+          LÉGENDE // CODES
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-4 h-2 bg-black border border-black inline-block"></span>
+          <span class="uppercase">Autoroutes (1-999)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-4 h-2 bg-[#444444] border border-black inline-block"></span>
+          <span class="uppercase">Routes (100+)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-4 h-2 bg-[#FF0000] border border-black inline-block"></span>
+          <span class="font-bold text-[#FF0000] uppercase">
+            {{ selectedRouteIds.length > 0 ? `ACTIVES (${selectedRouteIds.length})` : 'SÉLECTION' }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
