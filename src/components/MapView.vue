@@ -22,7 +22,7 @@ let map: L.Map | null = null;
 let currentTileLayer: L.TileLayer | null = null;
 const polylinesMap = new Map<string, { main: L.Polyline; casing?: L.Polyline }>();
 
-const isOsmLayer = ref(false);
+const isStreetLayer = ref(false);
 const isLegendOpen = ref(false);
 
 const QUEBEC_CENTER: L.LatLngTuple = [48.0, -70.5];
@@ -39,11 +39,11 @@ function initMap() {
 
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  setTileLayer(isOsmLayer.value);
+  setTileLayer(isStreetLayer.value);
   renderRoutes();
 }
 
-// Custom TileLayer serving local pre-bundled offline tiles with OSM fallback
+// Custom TileLayer serving local pre-bundled offline tiles with Esri Light Gray fallback
 const LocalFallbackTileLayer = (L.TileLayer as any).extend({
   createTile(coords: L.Coords, done: L.DoneCallback) {
     const tile = document.createElement('img');
@@ -51,12 +51,12 @@ const LocalFallbackTileLayer = (L.TileLayer as any).extend({
     tile.setAttribute('role', 'presentation');
 
     const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
-    const localUrl = `${baseUrl}/tiles/${coords.z}/${coords.x}/${coords.y}.png`;
-    const fallbackUrl = `https://tile.openstreetmap.org/${coords.z}/${coords.x}/${coords.y}.png`;
+    const localUrl = `${baseUrl}/tiles/${coords.z}/${coords.x}/${coords.y}.jpg`;
+    const fallbackUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${coords.z}/${coords.y}/${coords.x}`;
 
     tile.onload = () => done(undefined, tile);
     tile.onerror = () => {
-      // If local tile not found (e.g. beyond zoom 8), fallback to OpenStreetMap
+      // If local tile not found (e.g. beyond zoom 8), fallback to online Esri Light Gray
       if (tile.src !== fallbackUrl) {
         tile.src = fallbackUrl;
       } else {
@@ -69,26 +69,27 @@ const LocalFallbackTileLayer = (L.TileLayer as any).extend({
   },
 });
 
-function setTileLayer(directOsm: boolean) {
+function setTileLayer(streetMode: boolean) {
   if (!map) return;
 
   if (currentTileLayer) {
     map.removeLayer(currentTileLayer);
   }
 
-  if (directOsm) {
+  if (streetMode) {
+    // Esri World Street Map (rich street-level detail, free, no API key, no rate block)
     currentTileLayer = L.tileLayer(
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap',
+        attribution: '&copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
       }
     );
   } else {
-    // Local pre-bundled offline tiles with seamless OSM fallback
+    // Local pre-bundled offline tiles with seamless Esri Canvas fallback
     currentTileLayer = new LocalFallbackTileLayer('', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap (Tuiles locales du Québec)',
+      attribution: '&copy; Tuiles locales du Québec &amp; Esri Canvas',
     });
   }
 
@@ -98,8 +99,8 @@ function setTileLayer(directOsm: boolean) {
 }
 
 function toggleTileLayer() {
-  isOsmLayer.value = !isOsmLayer.value;
-  setTileLayer(isOsmLayer.value);
+  isStreetLayer.value = !isStreetLayer.value;
+  setTileLayer(isStreetLayer.value);
 }
 
 function renderRoutes() {
@@ -341,7 +342,7 @@ onUnmounted(() => {
         @click="toggleTileLayer"
         class="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-white hover:bg-black text-black hover:text-white border-[3px] border-black text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
       >
-        {{ isOsmLayer ? 'TUILES : EN LIGNE' : 'TUILES : LOCALES' }}
+        {{ isStreetLayer ? 'VUE : RUES' : 'VUE : ÉPURÉE' }}
       </button>
     </div>
 
