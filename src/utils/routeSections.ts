@@ -137,3 +137,79 @@ export const ROUTE_SECTIONS: RouteSectionGroup[] = [
     },
   },
 ];
+
+export interface RouteTypeInfo {
+  type: 'main_autoroute' | 'bypass_autoroute' | 'spur_autoroute' | 'national_route' | 'regional_route';
+  label: string;
+  shortLabel: string;
+  color: string;
+  borderColor: string;
+  badgeBg: string;
+  badgeText: string;
+}
+
+export const ROUTE_TYPE_STYLES: RouteTypeInfo[] = [
+  {
+    type: 'main_autoroute',
+    label: 'Autoroutes principales (1-99)',
+    shortLabel: 'Autoroutes (1-99)',
+    color: '#0055FF',      // Vibrant Blue
+    borderColor: '#000000',
+    badgeBg: '#0055FF',
+    badgeText: '#FFFFFF',
+  },
+  {
+    type: 'bypass_autoroute',
+    label: 'Rocades & Contournements (4xx, 6xx)',
+    shortLabel: 'Rocades (4xx, 6xx)',
+    color: '#00C8D7',      // Vivid Cyan
+    borderColor: '#000000',
+    badgeBg: '#00C8D7',
+    badgeText: '#000000',
+  },
+  {
+    type: 'spur_autoroute',
+    label: 'Antennes & Accès urbains (5xx, 7xx, 9xx)',
+    shortLabel: 'Antennes (5xx, 7xx, 9xx)',
+    color: '#FF8800',      // Vivid Safety Orange
+    borderColor: '#000000',
+    badgeBg: '#FF8800',
+    badgeText: '#000000',
+  },
+  {
+    type: 'national_route',
+    label: 'Routes Nationales (Série 100)',
+    shortLabel: 'Nationales (100)',
+    color: '#00B341',      // MTQ Green
+    borderColor: '#000000',
+    badgeBg: '#00B341',
+    badgeText: '#FFFFFF',
+  },
+  {
+    type: 'regional_route',
+    label: 'Routes Régionales / Nordiques (300+)',
+    shortLabel: 'Régionales (300+)',
+    color: '#A822FF',      // Electric Violet
+    borderColor: '#000000',
+    badgeBg: '#A822FF',
+    badgeText: '#FFFFFF',
+  },
+];
+
+export function getRouteTypeInfo(route: RouteInfo): RouteTypeInfo {
+  const num = parseInt(route.number, 10);
+  if (route.category === 'autoroute') {
+    if (num < 100) {
+      return ROUTE_TYPE_STYLES[0];
+    }
+    if (route.number.startsWith('4') || route.number.startsWith('6')) {
+      return ROUTE_TYPE_STYLES[1];
+    }
+    return ROUTE_TYPE_STYLES[2];
+  } else {
+    if (num >= 300) {
+      return ROUTE_TYPE_STYLES[4];
+    }
+    return ROUTE_TYPE_STYLES[3];
+  }
+}

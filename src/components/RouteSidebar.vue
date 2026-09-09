@@ -9,7 +9,7 @@ import {
   type SortingState,
 } from '@tanstack/vue-table';
 import type { RouteCategory, RouteInfo } from '../types/route';
-import { ROUTE_SECTIONS, type RouteSectionGroup } from '../utils/routeSections';
+import { ROUTE_SECTIONS, type RouteSectionGroup, getRouteTypeInfo } from '../utils/routeSections';
 
 const props = defineProps<{
   routes: RouteInfo[];
@@ -407,15 +407,15 @@ function selectBySection(section: RouteSectionGroup) {
           </div>
         </div>
 
-        <!-- Route Square Badge (3px border, square, no gradient) -->
+        <!-- Route Square Badge with distinct type color -->
         <div class="shrink-0">
           <div
-            class="w-11 h-11 border-[3px] flex flex-col items-center justify-center font-mono font-black"
-            :class="[
-              isSelected(row.original.id)
-                ? 'border-white bg-white text-black'
-                : 'border-black bg-black text-white'
-            ]"
+            class="w-11 h-11 border-[3px] flex flex-col items-center justify-center font-mono font-black transition-colors"
+            :style="{
+              borderColor: getRouteTypeInfo(row.original).color,
+              backgroundColor: isSelected(row.original.id) ? '#FFFFFF' : '#000000',
+              color: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : '#FFFFFF'
+            }"
           >
             <span class="text-[9px] uppercase tracking-tighter leading-none">
               {{ row.original.category === 'autoroute' ? 'A' : 'RTE' }}
@@ -428,6 +428,25 @@ function selectBySection(section: RouteSectionGroup) {
 
         <!-- Route Details -->
         <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-2 mb-0.5">
+            <span
+              class="text-[9px] font-mono font-bold uppercase px-1.5 py-0.2 border"
+              :style="{
+                borderColor: getRouteTypeInfo(row.original).color,
+                backgroundColor: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : 'transparent',
+                color: isSelected(row.original.id) ? (getRouteTypeInfo(row.original).badgeText || '#FFFFFF') : getRouteTypeInfo(row.original).color
+              }"
+            >
+              {{ getRouteTypeInfo(row.original).shortLabel }}
+            </span>
+            <span
+              class="shrink-0 text-xs font-mono font-bold border-2 px-1 py-0.2 uppercase"
+              :class="isSelected(row.original.id) ? 'border-white bg-white text-black' : 'border-black bg-black text-white'"
+            >
+              {{ row.original.lengthKm }} KM
+            </span>
+          </div>
+
           <div class="flex items-baseline justify-between gap-2">
             <h3
               class="text-sm font-bold tracking-tight truncate uppercase"
@@ -436,12 +455,6 @@ function selectBySection(section: RouteSectionGroup) {
             >
               {{ row.original.name }}
             </h3>
-            <span
-              class="shrink-0 text-xs font-mono font-bold border-2 px-1 py-0.2 uppercase"
-              :class="isSelected(row.original.id) ? 'border-white bg-white text-black' : 'border-black bg-black text-white'"
-            >
-              {{ row.original.lengthKm }} KM
-            </span>
           </div>
 
           <p

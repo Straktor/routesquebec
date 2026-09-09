@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import L from 'leaflet';
 import type { RouteInfo } from '../types/route';
-import { ROUTE_SECTIONS, type RouteSectionGroup } from '../utils/routeSections';
+import { ROUTE_SECTIONS, type RouteSectionGroup, getRouteTypeInfo, ROUTE_TYPE_STYLES } from '../utils/routeSections';
 
 const props = defineProps<{
   routes: RouteInfo[];
@@ -120,10 +120,10 @@ function renderRoutes() {
     const latLngs = route.coordinates.map(c => L.latLng(c[0], c[1]));
     const isSelected = props.selectedRouteIds.includes(route.id);
 
-    // Stark polyline styling
-    const defaultColor = route.category === 'autoroute' ? '#000000' : '#444444';
+    // Polyline styling with distinct MTQ type colors
+    const typeInfo = getRouteTypeInfo(route);
     const weight = isSelected ? 6 : hasSelection ? 2 : 3.5;
-    const opacity = isSelected ? 1 : hasSelection ? 0.25 : 0.85;
+    const opacity = isSelected ? 1 : hasSelection ? 0.2 : 0.85;
 
     let casingPolyline: L.Polyline | undefined;
 
@@ -131,7 +131,7 @@ function renderRoutes() {
       // High-contrast casing: 10px black underlay
       casingPolyline = L.polyline(latLngs, {
         color: '#000000',
-        weight: 11,
+        weight: 10,
         opacity: 1,
         lineCap: 'square',
         lineJoin: 'miter',
@@ -139,16 +139,20 @@ function renderRoutes() {
     }
 
     const polyline = L.polyline(latLngs, {
-      color: isSelected ? '#FF0000' : defaultColor,
+      color: typeInfo.color,
       weight,
       opacity,
       lineCap: 'square',
       lineJoin: 'miter',
     }).addTo(currentMap);
 
-    // Tooltip: inverted black box with Space Mono
+    // Tooltip: inverted box with route badge and type color
     polyline.bindTooltip(
-      `<div class="font-mono text-xs"><strong>${route.name.toUpperCase()}</strong><br/>[${route.number}] // ${route.lengthKm} KM</div>`,
+      `<div class="font-mono text-xs">
+        <span style="color: ${typeInfo.color}; font-weight: bold;">[${typeInfo.shortLabel.toUpperCase()}]</span>
+        <strong> ${route.name.toUpperCase()}</strong><br/>
+        [${route.category === 'autoroute' ? 'A' : 'R'}-${route.number}] // ${route.lengthKm} KM
+      </div>`,
       {
         sticky: true,
         direction: 'top',
@@ -156,14 +160,17 @@ function renderRoutes() {
       }
     );
 
-    // Popup: stark black/white box, no rounding, 3px border
+    // Popup: stark box with type color badge
     const popupContent = `
       <div class="p-3 bg-white text-black font-mono border-[3px] border-black">
         <div class="flex items-center gap-2 mb-2 pb-1 border-b-2 border-black">
-          <span class="bg-black text-white px-2 py-0.5 text-xs font-bold uppercase">
+          <span style="background-color: ${typeInfo.color}; color: ${typeInfo.badgeText};" class="px-2 py-0.5 text-xs font-bold uppercase">
             ${route.category === 'autoroute' ? 'AUTOROUTE' : 'ROUTE'} ${route.number}
           </span>
           <span class="text-xs font-bold">${route.lengthKm} KM</span>
+        </div>
+        <div class="text-[10px] font-bold uppercase text-black/60 mb-0.5">
+          ${typeInfo.label}
         </div>
         <div class="text-xs font-bold uppercase mb-1" style="font-family: var(--font-headline)">
           ${route.name}
@@ -186,9 +193,9 @@ function renderRoutes() {
     polyline.on('mouseover', () => {
       if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
-          weight: hasSelection ? 4 : 5,
+          weight: hasSelection ? 4.5 : 5.5,
           opacity: 1,
-          color: '#000000',
+          color: typeInfo.color,
         });
       }
     });
@@ -197,8 +204,8 @@ function renderRoutes() {
       if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
           weight: hasSelection ? 2 : 3.5,
-          opacity: hasSelection ? 0.25 : 0.85,
-          color: defaultColor,
+          opacity: hasSelection ? 0.2 : 0.85,
+          color: typeInfo.color,
         });
       }
     });
@@ -358,32 +365,28 @@ onUnmounted(() => {
         @click="isLegendOpen = !isLegendOpen"
         class="sm:hidden mb-1 px-2 py-1 bg-white text-black border-[2px] border-black font-mono text-[10px] font-bold uppercase cursor-pointer"
       >
-        {{ isLegendOpen ? '[FERMER LÉGENDE]' : '[LÉGENDE]' }}
+        {{ isLegendOpen ? '[FERMER LÉGENDE]' : '[LÉGENDE COULEURS]' }}
       </button>
 
       <!-- Legend Body -->
       <div
         :class="[
-          'bg-white border-[3px] border-black p-2.5 sm:p-3 text-[11px] sm:text-xs font-mono space-y-1.5 sm:space-y-2',
+          'bg-white border-[3px] border-black p-2.5 sm:p-3 text-[11px] sm:text-xs font-mono space-y-1.5',
           isLegendOpen ? 'block' : 'hidden sm:block'
         ]"
       >
-        <div class="font-bold uppercase tracking-wider border-b-2 border-black pb-1">
-          LÉGENDE // CODES
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-2 bg-black border border-black inline-block"></span>
-          <span class="uppercase">Autoroutes (1-999)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-2 bg-[#444444] border border-black inline-block"></span>
-          <span class="uppercase">Routes (100+)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-2 bg-[#FF0000] border border-black inline-block"></span>
-          <span class="font-bold text-[#FF0000] uppercase">
-            {{ selectedRouteIds.length > 0 ? `ACTIVES (${selectedRouteIds.length})` : 'SÉLECTION' }}
+        <div class="font-bold uppercase tracking-wider border-b-2 border-black pb-1 flex items-center justify-between gap-3">
+          <span>LÉGENDE // TYPES MTQ</span>
+          <span v-if="selectedRouteIds.length > 0" class="text-[10px] bg-black text-white px-1.5 py-0.2 shrink-0">
+            {{ selectedRouteIds.length }} / {{ routes.length }}
           </span>
+        </div>
+        <div v-for="st in ROUTE_TYPE_STYLES" :key="st.type" class="flex items-center gap-2">
+          <span
+            class="w-4 h-2.5 border border-black inline-block shrink-0"
+            :style="{ backgroundColor: st.color }"
+          ></span>
+          <span class="uppercase text-[10px] sm:text-[11px] font-bold">{{ st.label }}</span>
         </div>
       </div>
     </div>
