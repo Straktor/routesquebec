@@ -4,18 +4,20 @@ import {
   PanelLeftClose,
   PanelLeft,
   Route,
+  X,
 } from '@lucide/vue';
-import type { RouteInfo } from '../types/route';
 
 defineProps<{
   isSidebarOpen: boolean;
   totalRoutes: number;
   totalDistanceKm: number;
-  selectedRoute: RouteInfo | null;
+  selectedCount: number;
+  selectedDistanceKm: number;
 }>();
 
 const emit = defineEmits<{
   (e: 'toggleSidebar'): void;
+  (e: 'clearSelection'): void;
 }>();
 </script>
 
@@ -53,16 +55,23 @@ const emit = defineEmits<{
       </div>
     </div>
 
-    <!-- Center Active Route Pill -->
-    <div v-if="selectedRoute" class="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-800 border border-slate-700 rounded-full text-xs animate-fade-in">
-      <span
-        class="w-2 h-2 rounded-full"
-        :class="selectedRoute.category === 'autoroute' ? 'bg-blue-400' : 'bg-emerald-400'"
-      ></span>
-      <span class="font-semibold text-slate-200">
-        {{ selectedRoute.name }}
+    <!-- Center Active Multi-Selection Pill -->
+    <div
+      v-if="selectedCount > 0"
+      class="hidden md:flex items-center gap-2 px-3.5 py-1 bg-amber-500/20 border border-amber-500/40 rounded-full text-xs animate-fade-in"
+    >
+      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+      <span class="font-semibold text-amber-200">
+        {{ selectedCount }} {{ selectedCount > 1 ? 'routes sélectionnées' : 'route sélectionnée' }}
       </span>
-      <span class="text-slate-400">({{ selectedRoute.lengthKm }} km)</span>
+      <span class="text-amber-300/80">({{ selectedDistanceKm.toLocaleString() }} km)</span>
+      <button
+        @click="emit('clearSelection')"
+        class="ml-1 text-amber-300 hover:text-white hover:bg-amber-500/30 rounded p-0.5 transition-colors"
+        title="Désélectionner tout"
+      >
+        <X class="w-3.5 h-3.5" />
+      </button>
     </div>
 
     <!-- Right Stats & Links -->

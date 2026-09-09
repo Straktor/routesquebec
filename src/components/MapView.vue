@@ -6,11 +6,12 @@ import type { RouteInfo } from '../types/route';
 
 const props = defineProps<{
   routes: RouteInfo[];
-  selectedRouteId: string | null;
+  selectedRouteIds: string[];
 }>();
 
 const emit = defineEmits<{
-  (e: 'selectRoute', id: string | null): void;
+  (e: 'toggleRoute', id: string): void;
+  (e: 'clearSelection'): void;
 }>();
 
 const mapContainer = ref<HTMLDivElement | null>(null);
@@ -55,7 +56,7 @@ function setTileLayer(satellite: boolean) {
       }
     );
   } else {
-    // CartoDB Positron (clean, high contrast for highways)
+    // CartoDB Voyager (clean, high contrast for highways)
     currentTileLayer = L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
       {
@@ -85,16 +86,16 @@ function renderRoutes() {
   });
   polylinesMap.clear();
 
+  const hasSelection = props.selectedRouteIds.length > 0;
+
   props.routes.forEach(route => {
     const latLngs = route.coordinates.map(c => L.latLng(c[0], c[1]));
-
-    const isSelected = props.selectedRouteId === route.id;
-    const hasSelection = props.selectedRouteId !== null;
+    const isSelected = props.selectedRouteIds.includes(route.id);
 
     // Normal or dim style
-    const color = route.category === 'autoroute' ? '#2563eb' : '#059669';
+    const defaultColor = route.category === 'autoroute' ? '#2563eb' : '#059669';
     const weight = isSelected ? 6 : hasSelection ? 2.5 : 4;
-    const opacity = isSelected ? 1 : hasSelection ? 0.35 : 0.8;
+    const opacity = isSelected ? 1 : hasSelection ? 0.3 : 0.8;
 
     let glowPolyline: L.Polyline | undefined;
 
@@ -103,14 +104,14 @@ function renderRoutes() {
       glowPolyline = L.polyline(latLngs, {
         color: '#f59e0b',
         weight: 12,
-        opacity: 0.5,
+        opacity: 0.55,
         lineCap: 'round',
         lineJoin: 'round',
       }).addTo(currentMap);
     }
 
     const polyline = L.polyline(latLngs, {
-      color: isSelected ? '#ea580c' : color,
+      color: isSelected ? '#ea580c' : defaultColor,
       weight,
       opacity,
       lineCap: 'round',
@@ -119,7 +120,7 @@ function renderRoutes() {
 
     // Tooltip
     polyline.bindTooltip(
-      `<div class="font-semibold">${route.name}</div><div class="text-xs text-slate-500">${route.lengthKm} km</div>`,
+      `<div class="font-semibold">${route.name}</div><div class="text-xs text-slate-500">${route.lengthKm} km (Cliquer pour sélectionner/désélectionner)</div>`,
       {
         sticky: true,
         direction: 'top',
@@ -147,23 +148,23 @@ function renderRoutes() {
 
     // Events
     polyline.on('click', () => {
-      emit('selectRoute', route.id);
+      emit('toggleRoute', route.id);
     });
 
     polyline.on('mouseover', () => {
-      if (props.selectedRouteId !== route.id) {
+      if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
-          weight: hasSelection ? 5 : 6,
+          weight: hasSelection ? 4.5 : 5.5,
           opacity: 1,
         });
       }
     });
 
     polyline.on('mouseout', () => {
-      if (props.selectedRouteId !== route.id) {
+      if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
           weight: hasSelection ? 2.5 : 4,
-          opacity: hasSelection ? 0.35 : 0.8,
+          opacity: hasSelection ? 0.3 : 0.8,
         });
       }
     });
@@ -176,41 +177,48 @@ function renderRoutes() {
   });
 }
 
-function updateHighlight() {
+function updateHighlight(shouldFitBounds: boolean = true) {
   if (!map) return;
 
   renderRoutes();
 
-  if (props.selectedRouteId) {
-    const active = polylinesMap.get(props.selectedRouteId);
-    if (active) {
-      map.fitBounds(active.main.getBounds(), {
+  if (shouldFitBounds && props.selectedRouteIds.length > 0) {
+    let combinedBounds: L.LatLngBounds | null = null;
+
+    props.selectedRouteIds.forEach(id => {
+      const entry = polylinesMap.get(id);
+      if (entry) {
+        const bounds = entry.main.getBounds();
+        if (!combinedBounds) {
+          combinedBounds = L.latLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
+        } else {
+          combinedBounds.extend(bounds);
+        }
+      }
+    });
+
+    if (combinedBounds) {
+      map.fitBounds(combinedBounds, {
         padding: [60, 60],
         maxZoom: 10,
         animate: true,
       });
-
-      // Open popup near center of the line
-      setTimeout(() => {
-        if (active && map) {
-          active.main.openPopup();
-        }
-      }, 400);
     }
   }
 }
 
 function resetView() {
   if (!map) return;
-  emit('selectRoute', null);
+  emit('clearSelection');
   map.setView(QUEBEC_CENTER, DEFAULT_ZOOM, { animate: true });
 }
 
 watch(
-  () => props.selectedRouteId,
+  () => props.selectedRouteIds,
   () => {
-    updateHighlight();
-  }
+    updateHighlight(true);
+  },
+  { deep: true }
 );
 
 watch(
@@ -244,7 +252,7 @@ onUnmounted(() => {
       <button
         @click="resetView"
         title="Vue d'ensemble du Québec"
-        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all"
+        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all cursor-pointer"
       >
         <Maximize2 class="w-3.5 h-3.5" />
         <span>Tout le Québec</span>
@@ -254,7 +262,7 @@ onUnmounted(() => {
       <button
         @click="toggleTileLayer"
         title="Changer le style de carte"
-        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all"
+        class="flex items-center gap-1.5 px-3 py-2 bg-white/95 backdrop-blur-xs text-slate-700 hover:text-blue-600 rounded-lg shadow-md hover:shadow-lg border border-slate-200 text-xs font-semibold transition-all cursor-pointer"
       >
         <Layers class="w-3.5 h-3.5" />
         <span>{{ isSatellite ? 'Vue Voyager' : 'Vue OSM' }}</span>
@@ -276,7 +284,9 @@ onUnmounted(() => {
       </div>
       <div class="flex items-center gap-2">
         <span class="w-4 h-2 rounded-full bg-orange-500 ring-2 ring-amber-400 inline-block"></span>
-        <span class="text-slate-700 font-medium">Route sélectionnée</span>
+        <span class="text-slate-700 font-medium">
+          {{ selectedRouteIds.length > 0 ? `${selectedRouteIds.length} sélectionnée(s)` : 'Sélectionnez une ou plusieurs routes' }}
+        </span>
       </div>
     </div>
   </div>

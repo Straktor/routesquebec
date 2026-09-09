@@ -9,20 +9,34 @@ const { data: routesData, isLoading, error } = useRoutes();
 
 const routes = computed(() => routesData.value ?? []);
 
-const selectedRouteId = ref<string | null>(null);
+const selectedRouteIds = ref<string[]>([]);
 const isSidebarOpen = ref(true);
-
-const selectedRoute = computed(() => {
-  if (!selectedRouteId.value) return null;
-  return routes.value.find(r => r.id === selectedRouteId.value) || null;
-});
 
 const totalDistanceKm = computed(() => {
   return routes.value.reduce((acc, r) => acc + r.lengthKm, 0);
 });
 
-function handleSelectRoute(id: string | null) {
-  selectedRouteId.value = id;
+const selectedDistanceKm = computed(() => {
+  return routes.value
+    .filter(r => selectedRouteIds.value.includes(r.id))
+    .reduce((acc, r) => acc + r.lengthKm, 0);
+});
+
+function handleToggleRoute(id: string) {
+  if (selectedRouteIds.value.includes(id)) {
+    selectedRouteIds.value = selectedRouteIds.value.filter(item => item !== id);
+  } else {
+    selectedRouteIds.value = [...selectedRouteIds.value, id];
+  }
+}
+
+function handleSelectAll(ids: string[]) {
+  const merged = new Set([...selectedRouteIds.value, ...ids]);
+  selectedRouteIds.value = Array.from(merged);
+}
+
+function handleClearSelection() {
+  selectedRouteIds.value = [];
 }
 
 function toggleSidebar() {
@@ -37,8 +51,10 @@ function toggleSidebar() {
       :is-sidebar-open="isSidebarOpen"
       :total-routes="routes.length"
       :total-distance-km="totalDistanceKm"
-      :selected-route="selectedRoute"
+      :selected-count="selectedRouteIds.length"
+      :selected-distance-km="selectedDistanceKm"
       @toggle-sidebar="toggleSidebar"
+      @clear-selection="handleClearSelection"
     />
 
     <!-- Main Content (Sidebar + Map) -->
@@ -53,9 +69,11 @@ function toggleSidebar() {
         <RouteSidebar
           v-show="isSidebarOpen"
           :routes="routes"
-          :selected-route-id="selectedRouteId"
+          :selected-route-ids="selectedRouteIds"
           :is-loading="isLoading"
-          @select-route="handleSelectRoute"
+          @toggle-route="handleToggleRoute"
+          @select-all="handleSelectAll"
+          @clear-selection="handleClearSelection"
         />
       </div>
 
@@ -71,8 +89,9 @@ function toggleSidebar() {
 
         <MapView
           :routes="routes"
-          :selected-route-id="selectedRouteId"
-          @select-route="handleSelectRoute"
+          :selected-route-ids="selectedRouteIds"
+          @toggle-route="handleToggleRoute"
+          @clear-selection="handleClearSelection"
         />
       </main>
     </div>

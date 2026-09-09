@@ -15,17 +15,21 @@ import {
   MapPin,
   Route as RouteIcon,
   Check,
+  CheckSquare,
+  Square,
 } from '@lucide/vue';
 import type { RouteCategory, RouteInfo } from '../types/route';
 
 const props = defineProps<{
   routes: RouteInfo[];
-  selectedRouteId: string | null;
+  selectedRouteIds: string[];
   isLoading?: boolean;
 }>();
 
 const emit = defineEmits<{
-  (e: 'selectRoute', id: string | null): void;
+  (e: 'toggleRoute', id: string): void;
+  (e: 'selectAll', ids: string[]): void;
+  (e: 'clearSelection'): void;
 }>();
 
 const selectedCategory = ref<'all' | RouteCategory>('all');
@@ -62,11 +66,13 @@ const columns = [
   }),
 ];
 
+// TanStack Table setup
 const table = useVueTable({
   get data() {
     return filteredByCategory.value;
   },
   columns,
+  getRowId: (row) => row.id,
   getCoreRowModel: getCoreRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   getSortedRowModel: getSortedRowModel(),
@@ -100,6 +106,23 @@ const table = useVueTable({
   },
 });
 
+const visibleRowIds = computed(() => {
+  return table.getRowModel().rows.map(r => r.original.id);
+});
+
+const isAllVisibleSelected = computed(() => {
+  if (visibleRowIds.value.length === 0) return false;
+  return visibleRowIds.value.every(id => props.selectedRouteIds.includes(id));
+});
+
+function toggleSelectAllVisible() {
+  if (isAllVisibleSelected.value) {
+    emit('clearSelection');
+  } else {
+    emit('selectAll', visibleRowIds.value);
+  }
+}
+
 function toggleSort(columnId: string) {
   const current = sorting.value.find(s => s.id === columnId);
   if (!current) {
@@ -111,12 +134,8 @@ function toggleSort(columnId: string) {
   }
 }
 
-function selectRow(route: RouteInfo) {
-  if (props.selectedRouteId === route.id) {
-    emit('selectRoute', null);
-  } else {
-    emit('selectRoute', route.id);
-  }
+function isSelected(id: string) {
+  return props.selectedRouteIds.includes(id);
 }
 </script>
 
@@ -182,14 +201,26 @@ function selectRow(route: RouteInfo) {
         </button>
       </div>
 
-      <!-- Sort Bar -->
+      <!-- Multi-select & Sort Toolbar -->
       <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
-        <span class="font-medium">Trier par :</span>
+        <!-- Master Checkbox Toggle -->
+        <button
+          @click="toggleSelectAllVisible"
+          class="flex items-center gap-1.5 font-medium hover:text-blue-600 transition-colors py-0.5"
+          :title="isAllVisibleSelected ? 'Tout désélectionner' : 'Sélectionner toutes les routes visibles'"
+        >
+          <CheckSquare v-if="isAllVisibleSelected" class="w-4 h-4 text-blue-600" />
+          <Square v-else class="w-4 h-4 text-slate-400" />
+          <span>{{ isAllVisibleSelected ? 'Désélectionner' : 'Tout sélectionner' }}</span>
+        </button>
+
+        <!-- Sort Bar -->
         <div class="flex items-center gap-1">
           <button
             @click="toggleSort('number')"
             class="px-2 py-1 rounded hover:bg-slate-200 transition-colors flex items-center gap-1"
             :class="{ 'font-semibold text-blue-600 bg-blue-50': sorting[0]?.id === 'number' }"
+            title="Trier par numéro"
           >
             N°
             <ArrowUpDown class="w-3 h-3" />
@@ -198,6 +229,7 @@ function selectRow(route: RouteInfo) {
             @click="toggleSort('name')"
             class="px-2 py-1 rounded hover:bg-slate-200 transition-colors flex items-center gap-1"
             :class="{ 'font-semibold text-blue-600 bg-blue-50': sorting[0]?.id === 'name' }"
+            title="Trier par nom"
           >
             Nom
             <ArrowUpDown class="w-3 h-3" />
@@ -206,6 +238,7 @@ function selectRow(route: RouteInfo) {
             @click="toggleSort('lengthKm')"
             class="px-2 py-1 rounded hover:bg-slate-200 transition-colors flex items-center gap-1"
             :class="{ 'font-semibold text-blue-600 bg-blue-50': sorting[0]?.id === 'lengthKm' }"
+            title="Trier par distance"
           >
             Distance
             <ArrowUpDown class="w-3 h-3" />
@@ -214,18 +247,24 @@ function selectRow(route: RouteInfo) {
       </div>
     </div>
 
-    <!-- Active Selection Banner -->
+    <!-- Active Multi-Selection Banner -->
     <div
-      v-if="selectedRouteId"
-      class="px-4 py-2 bg-blue-50 border-b border-blue-100 flex items-center justify-between text-xs text-blue-800"
+      v-if="selectedRouteIds.length > 0"
+      class="px-4 py-2 bg-amber-50 border-b border-amber-200/80 flex items-center justify-between text-xs text-amber-900"
     >
-      <span class="font-medium">1 route sélectionnée sur la carte</span>
+      <div class="flex items-center gap-1.5 font-medium">
+        <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+        <span>
+          <strong>{{ selectedRouteIds.length }}</strong>
+          {{ selectedRouteIds.length > 1 ? 'routes sélectionnées' : 'route sélectionnée' }}
+        </span>
+      </div>
       <button
-        @click="emit('selectRoute', null)"
-        class="text-blue-600 hover:text-blue-800 underline font-semibold flex items-center gap-1"
+        @click="emit('clearSelection')"
+        class="text-amber-700 hover:text-amber-900 underline font-semibold flex items-center gap-1"
       >
         <X class="w-3.5 h-3.5" />
-        Désélectionner
+        Désélectionner tout
       </button>
     </div>
 
@@ -251,14 +290,24 @@ function selectRow(route: RouteInfo) {
         v-else
         v-for="row in table.getRowModel().rows"
         :key="row.original.id"
-        @click="selectRow(row.original)"
+        @click="emit('toggleRoute', row.original.id)"
         :class="[
           'p-3.5 cursor-pointer transition-all flex items-start gap-3 text-left relative group',
-          props.selectedRouteId === row.original.id
-            ? 'bg-blue-50/90 border-l-4 border-l-blue-600 shadow-xs'
+          isSelected(row.original.id)
+            ? 'bg-amber-50/80 border-l-4 border-l-orange-500 shadow-xs'
             : 'hover:bg-slate-50 border-l-4 border-l-transparent'
         ]"
       >
+        <!-- Checkbox Indicator -->
+        <div class="shrink-0 pt-2.5">
+          <div
+            class="w-4 h-4 rounded border flex items-center justify-center transition-colors"
+            :class="isSelected(row.original.id) ? 'bg-orange-500 border-orange-600 text-white' : 'border-slate-300 bg-white group-hover:border-slate-400'"
+          >
+            <Check v-if="isSelected(row.original.id)" class="w-3 h-3 stroke-[3]" />
+          </div>
+        </div>
+
         <!-- Route Shield Badge -->
         <div class="shrink-0 pt-0.5">
           <!-- Autoroute Shield (Quebec Blue) -->
@@ -285,7 +334,7 @@ function selectRow(route: RouteInfo) {
           <div class="flex items-center justify-between gap-1">
             <h3
               class="text-sm font-semibold truncate"
-              :class="props.selectedRouteId === row.original.id ? 'text-blue-900' : 'text-slate-800'"
+              :class="isSelected(row.original.id) ? 'text-amber-950 font-bold' : 'text-slate-800'"
             >
               {{ row.original.name }}
             </h3>
@@ -302,16 +351,6 @@ function selectRow(route: RouteInfo) {
           <p class="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
             {{ row.original.description }}
           </p>
-        </div>
-
-        <!-- Selection Checkmark -->
-        <div
-          v-if="props.selectedRouteId === row.original.id"
-          class="shrink-0 text-blue-600 self-center"
-        >
-          <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-            <Check class="w-3.5 h-3.5 stroke-[3]" />
-          </div>
         </div>
       </div>
     </div>
