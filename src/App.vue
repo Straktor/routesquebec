@@ -71,7 +71,7 @@ function toggleSidebar() {
         :class="[
           'transition-all duration-200 ease-linear z-[1050] md:z-20 shrink-0 h-full flex flex-col',
           isSidebarOpen
-            ? 'absolute inset-0 md:relative md:w-[440px] w-full bg-white'
+            ? 'absolute inset-0 md:relative md:w-[490px] w-full bg-white'
             : 'w-0 overflow-hidden pointer-events-none md:pointer-events-auto'
         ]"
       >
@@ -85,6 +85,7 @@ function toggleSidebar() {
           @select-all="handleSelectAll"
           @clear-selection="handleClearSelection"
           @set-selection="handleSetSelection"
+          @open-guide="isGuideOpen = true"
         />
 
         <!-- Mobile Floating Sticky Switch to Map -->
