@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppLogo from './AppLogo.vue';
+
 defineProps<{
   isSidebarOpen: boolean;
   totalRoutes: number;
@@ -17,7 +19,7 @@ const emit = defineEmits<{
 
 <template>
   <header class="min-h-14 sm:min-h-16 pt-safe bg-white text-black border-b-[4px] sm:border-b-[5px] border-black flex items-center justify-between px-3 sm:px-6 z-40 shrink-0 select-none">
-    <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+    <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
       <!-- Desktop Sidebar / Map Toggle Button -->
       <button
         @click="emit('toggleSidebar')"
@@ -27,23 +29,26 @@ const emit = defineEmits<{
         <span>{{ isSidebarOpen ? '[← FERMER]' : '[LISTE →]' }}</span>
       </button>
 
-      <!-- App Title -->
-      <div class="min-w-0">
-        <div class="flex items-baseline gap-1.5 sm:gap-2">
-          <h1
-            class="text-base sm:text-2xl font-black uppercase tracking-tight text-black leading-none truncate"
-            style="font-family: var(--font-headline)"
-          >
-            <span class="sm:hidden">ROUTES // QC</span>
-            <span class="hidden sm:inline">ROUTES // QUÉBEC</span>
-          </h1>
-          <span class="hidden lg:inline-block text-[10px] font-mono uppercase tracking-widest bg-black text-white px-1 py-0.2 font-bold">
-            MTQ
-          </span>
+      <!-- App Logo & Title -->
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <AppLogo :size="32" class="sm:w-9 sm:h-9 shrink-0 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]" />
+        <div class="min-w-0">
+          <div class="flex items-baseline gap-1.5 sm:gap-2">
+            <h1
+              class="text-base sm:text-2xl font-black uppercase tracking-tight text-black leading-none truncate"
+              style="font-family: var(--font-headline)"
+            >
+              <span class="sm:hidden">ROUTES // QC</span>
+              <span class="hidden sm:inline">ROUTES // QUÉBEC</span>
+            </h1>
+            <span class="hidden lg:inline-block text-[10px] font-mono uppercase tracking-widest bg-black text-white px-1 py-0.2 font-bold">
+              MTQ
+            </span>
+          </div>
+          <p class="text-[10px] font-mono text-black/60 tracking-tight hidden md:block">
+            BASE GÉOGRAPHIQUE & NOMENCLATURE BRUTE
+          </p>
         </div>
-        <p class="text-[10px] font-mono text-black/60 tracking-tight hidden md:block">
-          BASE GÉOGRAPHIQUE & NOMENCLATURE BRUTE
-        </p>
       </div>
     </div>
 
