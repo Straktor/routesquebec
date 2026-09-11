@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const mapContainer = ref<HTMLDivElement | null>(null);
 let map: L.Map | null = null;
 let currentTileLayer: L.TileLayer | null = null;
-const polylinesMap = new Map<string, { main: L.Polyline; casing?: L.Polyline }>();
+const polylinesMap = new Map<string, L.Polyline>();
 
 const isStreetLayer = ref(false);
 const isLegendOpen = ref(false);
@@ -108,9 +108,8 @@ function renderRoutes() {
   if (!currentMap) return;
 
   // Clear existing polylines
-  polylinesMap.forEach(({ main, casing }) => {
-    currentMap.removeLayer(main);
-    if (casing) currentMap.removeLayer(casing);
+  polylinesMap.forEach(polyline => {
+    currentMap.removeLayer(polyline);
   });
   polylinesMap.clear();
 
@@ -120,30 +119,17 @@ function renderRoutes() {
     const latLngs = route.coordinates.map(c => L.latLng(c[0], c[1]));
     const isSelected = props.selectedRouteIds.includes(route.id);
 
-    // Polyline styling with distinct MTQ type colors
+    // Polyline styling with distinct MTQ type colors - clean, smaller, pure color (no black casing)
     const typeInfo = getRouteTypeInfo(route);
-    const weight = isSelected ? 6 : hasSelection ? 2 : 3.5;
-    const opacity = isSelected ? 1 : hasSelection ? 0.2 : 0.85;
-
-    let casingPolyline: L.Polyline | undefined;
-
-    if (isSelected) {
-      // High-contrast casing: 10px black underlay
-      casingPolyline = L.polyline(latLngs, {
-        color: '#000000',
-        weight: 10,
-        opacity: 1,
-        lineCap: 'square',
-        lineJoin: 'miter',
-      }).addTo(currentMap);
-    }
+    const weight = isSelected ? 3.5 : hasSelection ? 1.5 : 2.5;
+    const opacity = isSelected ? 1 : hasSelection ? 0.25 : 0.85;
 
     const polyline = L.polyline(latLngs, {
       color: typeInfo.color,
       weight,
       opacity,
-      lineCap: 'square',
-      lineJoin: 'miter',
+      lineCap: 'round',
+      lineJoin: 'round',
     }).addTo(currentMap);
 
     // Tooltip: inverted box with route badge and type color
@@ -193,7 +179,7 @@ function renderRoutes() {
     polyline.on('mouseover', () => {
       if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
-          weight: hasSelection ? 4.5 : 5.5,
+          weight: hasSelection ? 3 : 3.5,
           opacity: 1,
           color: typeInfo.color,
         });
@@ -203,19 +189,18 @@ function renderRoutes() {
     polyline.on('mouseout', () => {
       if (!props.selectedRouteIds.includes(route.id)) {
         polyline.setStyle({
-          weight: hasSelection ? 2 : 3.5,
-          opacity: hasSelection ? 0.2 : 0.85,
+          weight: hasSelection ? 1.5 : 2.5,
+          opacity: hasSelection ? 0.25 : 0.85,
           color: typeInfo.color,
         });
       }
     });
 
     if (isSelected) {
-      if (casingPolyline) casingPolyline.bringToFront();
       polyline.bringToFront();
     }
 
-    polylinesMap.set(route.id, { main: polyline, casing: casingPolyline });
+    polylinesMap.set(route.id, polyline);
   });
 }
 
@@ -228,9 +213,9 @@ function updateHighlight(shouldFitBounds: boolean = true) {
     let combinedBounds: L.LatLngBounds | null = null;
 
     props.selectedRouteIds.forEach(id => {
-      const entry = polylinesMap.get(id);
-      if (entry) {
-        const bounds = entry.main.getBounds();
+      const polyline = polylinesMap.get(id);
+      if (polyline) {
+        const bounds = polyline.getBounds();
         if (!combinedBounds) {
           combinedBounds = L.latLngBounds(bounds.getSouthWest(), bounds.getNorthEast());
         } else {
