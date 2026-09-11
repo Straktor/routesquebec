@@ -31,11 +31,6 @@ withDefaults(
                  C 66 36 108 26 142 38
                  C 174 12 218 10 256 24 Z" />
       </clipPath>
-
-      <linearGradient id="app-road-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#181818" />
-        <stop offset="100%" stop-color="#0a0a0a" />
-      </linearGradient>
     </defs>
 
     <!-- Outer Black Shield Outline -->
@@ -64,14 +59,14 @@ withDefaults(
 
     <!-- Inner Shield Content Area -->
     <g clip-path="url(#app-shield-clip)">
-      <!-- Lower Body: Quebec Autoroute Blue -->
-      <rect x="0" y="0" width="512" height="512" fill="#003DA5" />
+      <!-- Lower Body: Pure Solid Black -->
+      <rect x="0" y="0" width="512" height="512" fill="#000000" />
 
       <!-- Upper Crown: Pure White Background -->
       <rect x="0" y="0" width="512" height="196" fill="#FFFFFF" />
-      <path d="M 0 196 L 512 196" stroke="#000000" stroke-width="12" />
+      <path d="M 0 196 L 512 196" stroke="#000000" stroke-width="14" />
 
-      <!-- FLEUR-DE-LYS (Centered in Upper White Section) -->
+      <!-- FLEUR-DE-LYS (Solid Black on White) -->
       <g transform="translate(256, 108)">
         <!-- Main Center Petal -->
         <path d="M 0 -68
@@ -79,7 +74,7 @@ withDefaults(
                  C 16 14 8 26 0 34
                  C -8 26 -16 14 -16 -4
                  C -16 -24 -10 -46 0 -68 Z"
-              fill="#003DA5" />
+              fill="#000000" />
 
         <!-- Left Petal -->
         <path d="M -8 28
@@ -87,7 +82,7 @@ withDefaults(
                  C -71 -36 -62 -45 -51 -45
                  C -38 -45 -31 -32 -26 -16
                  C -20 4 -14 18 -4 25 Z"
-              fill="#003DA5" />
+              fill="#000000" />
 
         <!-- Right Petal -->
         <path d="M 8 28
@@ -95,10 +90,10 @@ withDefaults(
                  C 71 -36 62 -45 51 -45
                  C 38 -45 31 -32 26 -16
                  C 20 4 14 18 4 25 Z"
-              fill="#003DA5" />
+              fill="#000000" />
 
         <!-- Central Cross Ring Bar -->
-        <rect x="-36" y="24" width="72" height="12" fill="#003DA5" rx="0" />
+        <rect x="-36" y="24" width="72" height="12" fill="#000000" rx="0" />
 
         <!-- Bottom Base Leaves -->
         <path d="M -16 40
@@ -106,59 +101,56 @@ withDefaults(
                  C -24 74 -10 66 -4 52
                  C 2 66 16 74 34 72
                  C 20 68 8 58 8 40 Z"
-              fill="#003DA5" />
+              fill="#000000" />
       </g>
 
-      <!-- Side Decorative Dots in Crown -->
-      <circle cx="96" cy="115" r="10" fill="#003DA5" />
-      <circle cx="416" cy="115" r="10" fill="#003DA5" />
+      <!-- Side Dots in Crown -->
+      <circle cx="96" cy="115" r="9" fill="#000000" />
+      <circle cx="416" cy="115" r="9" fill="#000000" />
 
-      <!-- LOWER SECTION: HIGHWAY NETWORK -->
+      <!-- LOWER SECTION: HIGHWAY NETWORK (White on Solid Black) -->
+
       <!-- Converging Perspective Highway -->
-      <path d="M 224 196 L 120 488 L 392 488 L 288 196 Z" fill="url(#app-road-grad)" stroke="#000000" stroke-width="8" />
-      <path d="M 224 196 L 120 488" stroke="#FFFFFF" stroke-width="12" />
-      <path d="M 288 196 L 392 488" stroke="#FFFFFF" stroke-width="12" />
+      <path d="M 224 196 L 110 492 L 402 492 L 288 196 Z" fill="#000000" />
+      <path d="M 224 196 L 110 492" stroke="#FFFFFF" stroke-width="14" />
+      <path d="M 288 196 L 402 492" stroke="#FFFFFF" stroke-width="14" />
 
-      <!-- Center Yellow Dashed Highway Divider Line -->
-      <path d="M 256 202 L 256 488"
-            stroke="#FFCC00"
+      <!-- Center White Dashed Highway Divider Line -->
+      <path d="M 256 202 L 256 492"
+            stroke="#FFFFFF"
             stroke-width="12"
             stroke-dasharray="28 20"
             stroke-linecap="square" />
 
       <!-- Curved Highway Interchange Ramps -->
-      <path d="M 52 380 C 130 380 148 300 148 200" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="square" />
-      <path d="M 52 380 C 130 380 148 300 148 200" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="square" />
-
-      <path d="M 460 380 C 382 380 364 300 364 200" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="square" />
-      <path d="M 460 380 C 382 380 364 300 364 200" fill="none" stroke="#000000" stroke-width="4" stroke-linecap="square" />
+      <path d="M 46 380 C 130 380 148 300 148 200" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="square" />
+      <path d="M 466 380 C 382 380 364 300 364 200" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="square" />
 
       <!-- ELEVATED OVERPASS BRIDGE -->
-      <rect x="70" y="324" width="372" height="16" fill="#000000" opacity="0.6" />
-      <rect x="70" y="278" width="372" height="46" fill="#FFFFFF" stroke="#000000" stroke-width="8" />
-      <line x1="70" y1="286" x2="442" y2="286" stroke="#003DA5" stroke-width="3" />
-      <line x1="70" y1="316" x2="442" y2="316" stroke="#003DA5" stroke-width="3" />
-      <rect x="182" y="324" width="16" height="32" fill="#FFFFFF" stroke="#000000" stroke-width="6" />
-      <rect x="314" y="324" width="16" height="32" fill="#FFFFFF" stroke="#000000" stroke-width="6" />
+      <rect x="64" y="276" width="384" height="46" fill="#FFFFFF" stroke="#000000" stroke-width="6" />
+
+      <!-- Bridge Pillars -->
+      <rect x="176" y="322" width="16" height="34" fill="#FFFFFF" />
+      <rect x="320" y="322" width="16" height="34" fill="#FFFFFF" />
 
       <!-- Bridge Label -->
-      <text x="256" y="310"
+      <text x="256" y="308"
             text-anchor="middle"
             font-family="'Archivo Black', 'Arial Black', sans-serif"
             font-weight="900"
-            font-size="21"
+            font-size="22"
             fill="#000000"
             letter-spacing="5">ROUTES QC</text>
 
       <!-- Bottom Badge -->
       <g transform="translate(256, 442)">
-        <rect x="-56" y="-18" width="112" height="36" fill="#000000" stroke="#FFFFFF" stroke-width="4" />
+        <rect x="-56" y="-18" width="112" height="36" fill="#FFFFFF" stroke="#000000" stroke-width="4" />
         <text x="0" y="8"
               text-anchor="middle"
               font-family="'Space Mono', monospace"
               font-weight="700"
               font-size="19"
-              fill="#FFFFFF"
+              fill="#000000"
               letter-spacing="2">MTQ</text>
       </g>
     </g>

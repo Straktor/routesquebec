@@ -23,7 +23,7 @@
            C 22 3 27 3 32 5 Z"
         fill="#FFFFFF" />
 
-  <!-- Inner Blue Field -->
+  <!-- Inner Black Field -->
   <path d="M 32 7
            C 36 5 41 5 45 8
            C 48 6 53 8 56 11
@@ -33,29 +33,29 @@
            C 6 29 6 16 8 11
            C 11 8 16 6 19 8
            C 23 5 28 5 32 7 Z"
-        fill="#003DA5" />
+        fill="#000000" />
 
   <!-- White Top Section -->
   <path d="M 7 12 C 10 9 15 7 19 9 C 23 6 28 6 32 8 C 36 6 41 6 45 9 C 49 7 54 9 57 12 L 58 26 L 6 26 Z" fill="#FFFFFF" />
   <line x1="6" y1="26" x2="58" y2="26" stroke="#000000" stroke-width="2" />
 
-  <!-- Mini Fleur-de-lys -->
+  <!-- Mini Black Fleur-de-lys -->
   <g transform="translate(32, 17) scale(0.24)">
-    <path d="M 0 -28 C 4 -18 6 -10 6 -2 C 6 6 3 11 0 14 C -3 11 -6 6 -6 -2 C -6 -10 -4 -18 0 -28 Z" fill="#003DA5" />
-    <path d="M -3 11 C -12 9 -25 4 -27 -9 C -28 -14 -25 -18 -20 -18 C -15 -18 -12 -13 -10 -6 C -8 2 -6 7 -2 10 Z" fill="#003DA5" />
-    <path d="M 3 11 C 12 9 25 4 27 -9 C 28 -14 25 -18 20 -18 C 15 -18 12 -13 10 -6 C 8 2 6 7 2 10 Z" fill="#003DA5" />
-    <rect x="-14" y="10" width="28" height="5" fill="#003DA5" />
-    <path d="M -6 16 C -6 23 -11 27 -17 29 C -10 30 -4 26 -2 21 C 0 26 6 30 13 29 C 7 27 2 23 2 16 Z" fill="#003DA5" />
+    <path d="M 0 -28 C 4 -18 6 -10 6 -2 C 6 6 3 11 0 14 C -3 11 -6 6 -6 -2 C -6 -10 -4 -18 0 -28 Z" fill="#000000" />
+    <path d="M -3 11 C -12 9 -25 4 -27 -9 C -28 -14 -25 -18 -20 -18 C -15 -18 -12 -13 -10 -6 C -8 2 -6 7 -2 10 Z" fill="#000000" />
+    <path d="M 3 11 C 12 9 25 4 27 -9 C 28 -14 25 -18 20 -18 C 15 -18 12 -13 10 -6 C 8 2 6 7 2 10 Z" fill="#000000" />
+    <rect x="-14" y="10" width="28" height="5" fill="#000000" />
+    <path d="M -6 16 C -6 23 -11 27 -17 29 C -10 30 -4 26 -2 21 C 0 26 6 30 13 29 C 7 27 2 23 2 16 Z" fill="#000000" />
   </g>
 
   <!-- Highway Overpass Bar -->
-  <rect x="10" y="34" width="44" height="8" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
+  <rect x="10" y="34" width="44" height="7" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
   <!-- Converging Road -->
-  <path d="M 28 26 L 16 57 L 48 57 L 36 26 Z" fill="#181818" />
+  <path d="M 28 26 L 16 57 L 48 57 L 36 26 Z" fill="#000000" />
   <line x1="28" y1="26" x2="16" y2="57" stroke="#FFFFFF" stroke-width="1.5" />
   <line x1="36" y1="26" x2="48" y2="57" stroke="#FFFFFF" stroke-width="1.5" />
-  <!-- Center Yellow Line -->
-  <line x1="32" y1="26" x2="32" y2="57" stroke="#FFCC00" stroke-width="2" stroke-dasharray="4 3" />
+  <!-- Center White Line -->
+  <line x1="32" y1="26" x2="32" y2="57" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 3" />
   <!-- Overpass Bridge in front of road -->
   <rect x="10" y="34" width="44" height="7" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" />
 </svg>
