@@ -30,8 +30,8 @@ const emit = defineEmits<{
       </button>
 
       <!-- App Logo & Title -->
-      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-        <AppLogo :size="32" class="sm:w-9 sm:h-9 shrink-0 drop-shadow-[2px_2px_0px_rgba(0,0,0,1)]" />
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <AppLogo :size="30" class="sm:w-8 sm:h-8 shrink-0" />
         <div class="min-w-0">
           <div class="flex items-baseline gap-1.5 sm:gap-2">
             <h1
