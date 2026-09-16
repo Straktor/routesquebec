@@ -470,18 +470,23 @@ function toggleSort(columnId: string) {
             <div class="shrink-0">
               <div
                 class="min-w-[46px] px-1.5 py-0.5 border-[2px] flex items-center justify-center font-mono font-black text-xs transition-colors"
-                :style="{
-                  borderColor: getRouteTypeInfo(row.original).color,
-                  backgroundColor: isSelected(row.original.id) ? '#FFFFFF' : '#000000',
-                  color: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : '#FFFFFF'
-                }"
+                :class="[
+                  isSelected(row.original.id)
+                    ? 'border-white bg-white text-black'
+                    : 'border-black bg-black text-white'
+                ]"
               >
                 {{ row.original.category === 'autoroute' ? 'A' : 'R' }}-{{ row.original.number }}
               </div>
             </div>
 
             <!-- Route Details -->
-            <div class="flex-1 min-w-0 pr-1">
+            <div class="flex-1 min-w-0 pr-1 flex items-center gap-1.5">
+              <span
+                class="w-2 h-2 shrink-0 border inline-block"
+                :class="isSelected(row.original.id) ? 'border-white' : 'border-black'"
+                :style="{ backgroundColor: getRouteTypeInfo(row.original).color }"
+              ></span>
               <h3
                 class="text-xs font-bold tracking-tight truncate uppercase leading-tight"
                 :class="isSelected(row.original.id) ? 'text-white' : 'text-black'"
