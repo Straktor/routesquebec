@@ -254,7 +254,7 @@ function toggleSort(columnId: string) {
           <div class="flex items-center justify-between">
             <span class="font-mono text-[10px] font-black uppercase tracking-[1px] text-black flex items-center gap-1.5">
               <Zap :size="13" class="text-black" />
-              SÉLECTION RAPIDE //
+              SÉLECTION RAPIDE
             </span>
             <div
               v-if="selectedRouteIds.length > 0 || selectedParity !== null || selectedTypes.length > 0"
@@ -277,7 +277,7 @@ function toggleSort(columnId: string) {
           <!-- 1. Parité / Orientation -->
           <div>
             <div class="flex items-center justify-between mb-1 font-mono text-[9px] font-bold uppercase text-black/60">
-              <span>1. PARITÉ (ORIENTATION) //</span>
+              <span>1. PARITÉ (ORIENTATION)</span>
               <span v-if="selectedParity" class="text-black font-black">
                 [{{ selectedParity === 'even' ? 'PAIRS ACTIF' : 'IMPAIRS ACTIF' }}]
               </span>
@@ -313,7 +313,7 @@ function toggleSort(columnId: string) {
           <!-- 2. Types de routes -->
           <div>
             <div class="flex items-center justify-between mb-1 font-mono text-[9px] font-bold uppercase text-black/60">
-              <span>2. TYPES DE ROUTES //</span>
+              <span>2. TYPES DE ROUTES</span>
               <span v-if="selectedTypes.length > 0" class="text-black font-black">
                 [{{ selectedTypes.length }} TYPE(S) ACTIF(S)]
               </span>
@@ -345,7 +345,7 @@ function toggleSort(columnId: string) {
           <!-- Search Input -->
           <div>
             <label class="block font-mono text-[9px] font-bold uppercase tracking-[1px] text-black/60 mb-1">
-              RECHERCHER PAR N° OU VILLE //
+              RECHERCHER PAR N° OU VILLE
             </label>
             <div class="relative">
               <input
