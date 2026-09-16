@@ -690,19 +690,8 @@ function getSectionIcon(iconName: string) {
               </h3>
             </div>
 
-            <!-- Route Type Tag & Distance -->
-            <div class="shrink-0 flex items-center gap-1.5">
-              <span
-                class="text-[9px] font-mono font-bold uppercase px-1 py-0.2 border hidden sm:inline-block"
-                :style="{
-                  borderColor: getRouteTypeInfo(row.original).color,
-                  backgroundColor: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : 'transparent',
-                  color: isSelected(row.original.id) ? (getRouteTypeInfo(row.original).badgeText || '#FFFFFF') : getRouteTypeInfo(row.original).color
-                }"
-              >
-                {{ getRouteTypeInfo(row.original).shortLabel }}
-              </span>
-
+            <!-- Distance -->
+            <div class="shrink-0 flex items-center">
               <span
                 class="text-[10px] font-mono font-bold border px-1 uppercase whitespace-nowrap"
                 :class="isSelected(row.original.id) ? 'border-white bg-white text-black' : 'border-black bg-black text-white'"
