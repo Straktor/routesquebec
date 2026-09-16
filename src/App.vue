@@ -104,13 +104,11 @@ function openMobileTab(tab: 'carte' | 'routes' | 'guide') {
           :routes="routes"
           :selected-route-ids="selectedRouteIds"
           :is-loading="isLoading"
-          :is-guide-open="isGuideOpen"
           class="flex-1 min-h-0"
           @toggle-route="handleToggleRoute"
           @select-all="handleSelectAll"
           @clear-selection="handleClearSelection"
           @set-selection="handleSetSelection"
-          @open-guide="toggleGuide"
           @close="isSidebarOpen = false"
         />
 

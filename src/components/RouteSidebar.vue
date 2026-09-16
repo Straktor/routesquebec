@@ -9,7 +9,6 @@ import {
   type SortingState,
 } from '@tanstack/vue-table';
 import {
-  BookOpen,
   ArrowRightLeft,
   ArrowUpDown,
   Zap,
@@ -17,24 +16,17 @@ import {
 import type { RouteInfo } from '../types/route';
 import { getRouteTypeInfo } from '../utils/routeSections';
 
-const props = withDefaults(
-  defineProps<{
-    routes: RouteInfo[];
-    selectedRouteIds: string[];
-    isLoading?: boolean;
-    isGuideOpen?: boolean;
-  }>(),
-  {
-    isGuideOpen: false,
-  }
-);
+const props = defineProps<{
+  routes: RouteInfo[];
+  selectedRouteIds: string[];
+  isLoading?: boolean;
+}>();
 
 const emit = defineEmits<{
   (e: 'toggleRoute', id: string): void;
   (e: 'selectAll', ids: string[]): void;
   (e: 'clearSelection'): void;
   (e: 'setSelection', ids: string[]): void;
-  (e: 'openGuide'): void;
   (e: 'close'): void;
 }>();
 
@@ -254,45 +246,18 @@ function toggleSort(columnId: string) {
   <aside class="flex h-full bg-white border-r-[5px] border-black select-none overflow-hidden">
     <!-- MAIN SIDEBAR CONTENT PANEL -->
     <div class="flex-1 flex flex-col min-w-0 bg-white h-full overflow-hidden">
-      <!-- Top Header Bar -->
-      <div class="h-10 bg-[#EFEFEF] border-b-[3px] border-black flex items-center justify-between px-3 shrink-0">
-        <!-- Desktop: Title and Guide button -->
-        <div class="hidden md:flex items-center gap-2 font-mono text-[11px] font-bold tracking-wider">
-          <span class="px-2.5 py-1 uppercase bg-black text-white border-[2px] border-black">
-            ROUTES ({{ routes.length }})
-          </span>
-          <button
-            @click="emit('openGuide')"
-            :class="[
-              'px-2.5 py-1 uppercase transition-colors cursor-pointer border-[2px] flex items-center gap-1',
-              isGuideOpen
-                ? 'bg-black text-white border-black'
-                : 'bg-transparent text-black border-transparent hover:border-black/30'
-            ]"
-            title="Guide officiel MTQ"
-          >
-            <BookOpen :size="12" />
-            GUIDE MTQ
-          </button>
-        </div>
-
-        <!-- Mobile: Native App View Title & Close Action -->
-        <div class="md:hidden flex items-center justify-between w-full font-mono text-xs font-bold">
-          <span class="uppercase tracking-wider flex items-center gap-2">
-            <span class="inline-block w-2.5 h-2.5 bg-black"></span>
-            ROUTES ({{ table.getRowModel().rows.length }}/{{ routes.length }})
-          </span>
-          <button
-            @click="emit('close')"
-            class="px-2 py-1 bg-black hover:bg-black/80 text-white font-mono text-[10px] uppercase font-bold tracking-wider cursor-pointer border border-black"
-          >
-            [X CARTE]
-          </button>
-        </div>
-
-        <span class="text-[10px] font-mono font-bold text-black/50 hidden md:inline uppercase">
-          {{ table.getRowModel().rows.length }} AFFICHÉES
+      <!-- Mobile Header Bar: Title & Close Action -->
+      <div class="md:hidden h-10 bg-[#EFEFEF] border-b-[3px] border-black flex items-center justify-between px-3 shrink-0 font-mono text-xs font-bold">
+        <span class="uppercase tracking-wider flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 bg-black"></span>
+          ROUTES ({{ table.getRowModel().rows.length }}/{{ routes.length }})
         </span>
+        <button
+          @click="emit('close')"
+          class="px-2 py-1 bg-black hover:bg-black/80 text-white font-mono text-[10px] uppercase font-bold tracking-wider cursor-pointer border border-black"
+        >
+          [X CARTE]
+        </button>
       </div>
 
       <!-- ROUTES EXPLORER -->
