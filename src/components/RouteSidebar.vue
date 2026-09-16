@@ -46,8 +46,6 @@ const QUICK_TYPES: QuickTypeOption[] = [
   { id: 'autoroute', label: 'AUTOROUTES', color: '#0055FF' },
   { id: 'national', label: 'NATIONALES', color: '#00B341' },
   { id: 'regional', label: 'RÉGIONALES', color: '#A822FF' },
-  { id: 'bypass', label: 'ROCADES (4xx)', color: '#00C8D7' },
-  { id: 'spur', label: 'ANTENNES (5xx+)', color: '#FF8800' },
 ];
 
 function matchesQuickFilter(r: RouteInfo, parity: 'even' | 'odd' | null, types: string[]): boolean {
@@ -65,12 +63,6 @@ function matchesQuickFilter(r: RouteInfo, parity: 'even' | 'odd' | null, types: 
       if (t === 'autoroute') return r.category === 'autoroute';
       if (t === 'national') return r.category === 'national' || (num >= 100 && num < 200 && r.category !== 'autoroute');
       if (t === 'regional') return r.category === 'regional' || (num >= 200 && r.category !== 'autoroute');
-      if (t === 'bypass') {
-        return r.category === 'autoroute' && r.number.length === 3 && (r.number.startsWith('4') || r.number.startsWith('6'));
-      }
-      if (t === 'spur') {
-        return r.category === 'autoroute' && r.number.length === 3 && (r.number.startsWith('5') || r.number.startsWith('7') || r.number.startsWith('9'));
-      }
       return false;
     });
     if (!matchesAny) return false;
@@ -103,11 +95,6 @@ function toggleType(typeId: string) {
   if (selectedTypes.value.includes(typeId)) {
     selectedTypes.value = selectedTypes.value.filter(t => t !== typeId);
   } else {
-    if (typeId === 'autoroute') {
-      selectedTypes.value = selectedTypes.value.filter(t => t !== 'bypass' && t !== 'spur');
-    } else if (typeId === 'bypass' || typeId === 'spur') {
-      selectedTypes.value = selectedTypes.value.filter(t => t !== 'autoroute');
-    }
     selectedTypes.value = [...selectedTypes.value, typeId];
   }
   applyQuickFilter();
