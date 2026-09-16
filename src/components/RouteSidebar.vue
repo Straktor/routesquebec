@@ -233,6 +233,14 @@ function isSelected(id: string) {
   return props.selectedRouteIds.includes(id);
 }
 
+function getRouteTooltip(route: RouteInfo): string {
+  const type = getRouteTypeInfo(route);
+  const prefix = route.category === 'autoroute' ? 'A' : 'R';
+  const endpoints = route.startPoint && route.endPoint ? `\nTrajet : ${route.startPoint} → ${route.endPoint}` : '';
+  const desc = route.description ? `\nNote : ${route.description}` : '';
+  return `${prefix}-${route.number} : ${route.name.toUpperCase()} (${route.lengthKm} km)\nClassification : ${type.label}${endpoints}${desc}`;
+}
+
 const visibleRouteIds = computed(() => {
   return table.getRowModel().rows.map(row => row.original.id);
 });
@@ -635,15 +643,16 @@ function getSectionIcon(iconName: string) {
             v-for="row in table.getRowModel().rows"
             :key="row.original.id"
             @click="emit('toggleRoute', row.original.id)"
+            :title="getRouteTooltip(row.original)"
             :class="[
-              'p-3 cursor-pointer transition-colors flex items-start gap-2.5 text-left relative',
+              'px-3 py-1.5 cursor-pointer transition-colors flex items-center gap-2.5 text-left border-b-[2px] border-black',
               isSelected(row.original.id)
                 ? 'bg-black text-white'
                 : 'bg-white text-black hover:bg-[#F5F5F5]'
             ]"
           >
             <!-- Checkbox -->
-            <div class="shrink-0 pt-0.5">
+            <div class="shrink-0">
               <div
                 class="w-4 h-4 border-[2px] flex items-center justify-center font-mono font-bold text-[10px]"
                 :class="[
@@ -656,60 +665,50 @@ function getSectionIcon(iconName: string) {
               </div>
             </div>
 
-            <!-- Route Square Badge -->
+            <!-- Route Compact Badge -->
             <div class="shrink-0">
               <div
-                class="w-10 h-10 border-[2px] flex flex-col items-center justify-center font-mono font-black transition-colors"
+                class="min-w-[46px] px-1.5 py-0.5 border-[2px] flex items-center justify-center font-mono font-black text-xs transition-colors"
                 :style="{
                   borderColor: getRouteTypeInfo(row.original).color,
                   backgroundColor: isSelected(row.original.id) ? '#FFFFFF' : '#000000',
                   color: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : '#FFFFFF'
                 }"
               >
-                <span class="text-[8px] uppercase tracking-tighter leading-none">
-                  {{ row.original.category === 'autoroute' ? 'A' : 'RTE' }}
-                </span>
-                <span class="text-xs leading-tight font-black">
-                  {{ row.original.number }}
-                </span>
+                {{ row.original.category === 'autoroute' ? 'A' : 'R' }}-{{ row.original.number }}
               </div>
             </div>
 
             <!-- Route Details -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between gap-1 mb-0.5">
-                <span
-                  class="text-[8px] font-mono font-bold uppercase px-1 py-0.2 border"
-                  :style="{
-                    borderColor: getRouteTypeInfo(row.original).color,
-                    backgroundColor: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : 'transparent',
-                    color: isSelected(row.original.id) ? (getRouteTypeInfo(row.original).badgeText || '#FFFFFF') : getRouteTypeInfo(row.original).color
-                  }"
-                >
-                  {{ getRouteTypeInfo(row.original).shortLabel }}
-                </span>
-                <span
-                  class="shrink-0 text-[10px] font-mono font-bold border px-1 uppercase"
-                  :class="isSelected(row.original.id) ? 'border-white bg-white text-black' : 'border-black bg-black text-white'"
-                >
-                  {{ row.original.lengthKm }} KM
-                </span>
-              </div>
-
+            <div class="flex-1 min-w-0 pr-1">
               <h3
-                class="text-xs font-bold tracking-tight truncate uppercase"
+                class="text-xs font-bold tracking-tight truncate uppercase leading-tight"
                 :class="isSelected(row.original.id) ? 'text-white' : 'text-black'"
                 style="font-family: var(--font-headline)"
               >
                 {{ row.original.name }}
               </h3>
+            </div>
 
-              <p
-                class="text-[10px] font-mono uppercase tracking-tight mt-0.5 truncate"
-                :class="isSelected(row.original.id) ? 'text-white/80' : 'text-black/70'"
+            <!-- Route Type Tag & Distance -->
+            <div class="shrink-0 flex items-center gap-1.5">
+              <span
+                class="text-[9px] font-mono font-bold uppercase px-1 py-0.2 border hidden sm:inline-block"
+                :style="{
+                  borderColor: getRouteTypeInfo(row.original).color,
+                  backgroundColor: isSelected(row.original.id) ? getRouteTypeInfo(row.original).color : 'transparent',
+                  color: isSelected(row.original.id) ? (getRouteTypeInfo(row.original).badgeText || '#FFFFFF') : getRouteTypeInfo(row.original).color
+                }"
               >
-                {{ row.original.startPoint }} → {{ row.original.endPoint }}
-              </p>
+                {{ getRouteTypeInfo(row.original).shortLabel }}
+              </span>
+
+              <span
+                class="text-[10px] font-mono font-bold border px-1 uppercase whitespace-nowrap"
+                :class="isSelected(row.original.id) ? 'border-white bg-white text-black' : 'border-black bg-black text-white'"
+              >
+                {{ row.original.lengthKm }} KM
+              </span>
             </div>
           </div>
         </div>
