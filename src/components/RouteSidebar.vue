@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import {
   useVueTable,
   getCoreRowModel,
@@ -20,9 +20,10 @@ import {
   Navigation,
   MapPin,
   Check,
-  X
+  X,
+  Zap,
 } from 'lucide-vue-next';
-import type { RouteCategory, RouteInfo } from '../types/route';
+import type { RouteInfo } from '../types/route';
 import { ROUTE_SECTIONS, type RouteSectionGroup, getRouteTypeInfo } from '../utils/routeSections';
 
 const props = withDefaults(
@@ -55,47 +56,115 @@ const activeTab = computed({
   set: (val: 'routes' | 'nomenclature') => emit('update:activeTab', val),
 });
 
-// Tab 1: Route Explorer state
-const selectedCategory = ref<'all' | RouteCategory>('all');
-const selectedParity = ref<'all' | 'even' | 'odd'>('all');
+// Tab 1: Route Explorer & Quick Selector state
+const selectedParity = ref<'even' | 'odd' | null>(null);
+const selectedTypes = ref<string[]>([]);
 const globalFilter = ref('');
 const sorting = ref<SortingState>([{ id: 'number', desc: false }]);
 
 // Tab 2: Nomenclature state
 const nomenclatureFilter = ref('');
 
-// Parity counts based on current category
-const parityCounts = computed(() => {
-  const base = selectedCategory.value === 'all'
-    ? props.routes
-    : props.routes.filter(r => r.category === selectedCategory.value);
-  let even = 0;
-  let odd = 0;
-  base.forEach(r => {
-    const num = parseInt(r.number, 10);
-    if (!isNaN(num)) {
-      if (num % 2 === 0) even++;
-      else odd++;
-    }
-  });
-  return { all: base.length, even, odd };
-});
+interface QuickTypeOption {
+  id: string;
+  label: string;
+  color: string;
+}
 
-// Filter by category and parity before table processing
-const filteredData = computed(() => {
-  return props.routes.filter(r => {
-    if (selectedCategory.value !== 'all' && r.category !== selectedCategory.value) {
+const QUICK_TYPES: QuickTypeOption[] = [
+  { id: 'autoroute', label: 'AUTOROUTES', color: '#0055FF' },
+  { id: 'national', label: 'NATIONALES', color: '#00B341' },
+  { id: 'regional', label: 'RÉGIONALES', color: '#A822FF' },
+  { id: 'bypass', label: 'ROCADES (4xx)', color: '#00C8D7' },
+  { id: 'spur', label: 'ANTENNES (5xx+)', color: '#FF8800' },
+];
+
+function matchesQuickFilter(r: RouteInfo, parity: 'even' | 'odd' | null, types: string[]): boolean {
+  if (parity !== null) {
+    const num = parseInt(r.number, 10);
+    if (isNaN(num)) return false;
+    const isEven = num % 2 === 0;
+    if (parity === 'even' && !isEven) return false;
+    if (parity === 'odd' && isEven) return false;
+  }
+
+  if (types.length > 0) {
+    const num = parseInt(r.number, 10);
+    const matchesAny = types.some(t => {
+      if (t === 'autoroute') return r.category === 'autoroute';
+      if (t === 'national') return r.category === 'national' || (num >= 100 && num < 200 && r.category !== 'autoroute');
+      if (t === 'regional') return r.category === 'regional' || (num >= 200 && r.category !== 'autoroute');
+      if (t === 'bypass') {
+        return r.category === 'autoroute' && r.number.length === 3 && (r.number.startsWith('4') || r.number.startsWith('6'));
+      }
+      if (t === 'spur') {
+        return r.category === 'autoroute' && r.number.length === 3 && (r.number.startsWith('5') || r.number.startsWith('7') || r.number.startsWith('9'));
+      }
       return false;
+    });
+    if (!matchesAny) return false;
+  }
+
+  return true;
+}
+
+function applyQuickFilter() {
+  if (selectedParity.value === null && selectedTypes.value.length === 0) {
+    emit('clearSelection');
+    return;
+  }
+  const matchingIds = props.routes
+    .filter(r => matchesQuickFilter(r, selectedParity.value, selectedTypes.value))
+    .map(r => r.id);
+  emit('setSelection', matchingIds);
+}
+
+function toggleParity(parity: 'even' | 'odd') {
+  if (selectedParity.value === parity) {
+    selectedParity.value = null;
+  } else {
+    selectedParity.value = parity;
+  }
+  applyQuickFilter();
+}
+
+function toggleType(typeId: string) {
+  if (selectedTypes.value.includes(typeId)) {
+    selectedTypes.value = selectedTypes.value.filter(t => t !== typeId);
+  } else {
+    if (typeId === 'autoroute') {
+      selectedTypes.value = selectedTypes.value.filter(t => t !== 'bypass' && t !== 'spur');
+    } else if (typeId === 'bypass' || typeId === 'spur') {
+      selectedTypes.value = selectedTypes.value.filter(t => t !== 'autoroute');
     }
-    if (selectedParity.value !== 'all') {
-      const num = parseInt(r.number, 10);
-      if (isNaN(num)) return false;
-      const isEven = num % 2 === 0;
-      if (selectedParity.value === 'even' && !isEven) return false;
-      if (selectedParity.value === 'odd' && isEven) return false;
+    selectedTypes.value = [...selectedTypes.value, typeId];
+  }
+  applyQuickFilter();
+}
+
+function clearQuickFilter() {
+  selectedParity.value = null;
+  selectedTypes.value = [];
+  emit('clearSelection');
+}
+
+// Reset when selection cleared from external action (e.g. Navbar or map reset)
+watch(
+  () => props.selectedRouteIds,
+  (newIds) => {
+    if (newIds.length === 0) {
+      selectedParity.value = null;
+      selectedTypes.value = [];
     }
-    return true;
-  });
+  }
+);
+
+// Filter table data by quick filter
+const filteredData = computed(() => {
+  if (selectedParity.value === null && selectedTypes.value.length === 0) {
+    return props.routes;
+  }
+  return props.routes.filter(r => matchesQuickFilter(r, selectedParity.value, selectedTypes.value));
 });
 
 const columnHelper = createColumnHelper<RouteInfo>();
@@ -371,121 +440,117 @@ function getSectionIcon(iconName: string) {
       <!-- TAB 1: ROUTES EXPLORER                                            -->
       <!-- ================================================================= -->
       <div v-show="activeTab === 'routes'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <!-- Search & Filter Header -->
-        <div class="p-3.5 border-b-[3px] border-black bg-white space-y-2.5 shrink-0">
-          <!-- Search Input -->
-          <div>
-            <label class="block font-mono text-[10px] font-bold uppercase tracking-[1px] text-black mb-1">
-              RECHERCHER //
-            </label>
-            <div class="relative">
-              <input
-                v-model="globalFilter"
-                type="text"
-                placeholder="N° OU VILLE (20, 138, GASPÉ)..."
-                class="w-full px-3 py-2 text-sm bg-[#F0F0F0] hover:bg-[#E8E8E8] text-black border-[3px] border-black focus:border-[4px] focus:bg-white focus:outline-none font-mono transition-all placeholder:text-black/40 uppercase"
-              />
+        <!-- Quick Selector Box in Left Panel -->
+        <div class="p-3.5 bg-[#F7F7F7] border-b-[3px] border-black space-y-2.5 shrink-0">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-[10px] font-black uppercase tracking-[1px] text-black flex items-center gap-1.5">
+              <Zap :size="13" class="text-black" />
+              SÉLECTION RAPIDE //
+            </span>
+            <div
+              v-if="selectedRouteIds.length > 0 || selectedParity !== null || selectedTypes.length > 0"
+              class="flex items-center gap-1.5"
+            >
+              <span class="px-1.5 py-0.5 bg-black text-white font-mono text-[10px] font-bold">
+                {{ selectedRouteIds.length }} SÉLECTIONNÉS
+              </span>
               <button
-                v-if="globalFilter"
-                @click="globalFilter = ''"
-                class="absolute right-2.5 top-1/2 -translate-y-1/2 font-mono font-bold text-xs hover:text-[#FF0000] px-1 cursor-pointer"
+                @click="clearQuickFilter"
+                class="px-1.5 py-0.5 border border-black hover:bg-[#CC0000] hover:text-white text-[#CC0000] font-mono text-[10px] font-bold uppercase transition-colors cursor-pointer flex items-center gap-1"
+                title="Désélectionner tout"
               >
-                [X]
+                <X :size="10" />
+                <span>EFFACER</span>
               </button>
             </div>
           </div>
 
-          <!-- Parity Filter Chips -->
+          <!-- 1. Parité / Orientation -->
           <div>
-            <label class="block font-mono text-[9px] font-bold uppercase tracking-[1px] text-black/60 mb-1">
-              PARITÉ / ORIENTATION //
-            </label>
-            <div class="grid grid-cols-3 gap-1.5">
+            <div class="flex items-center justify-between mb-1 font-mono text-[9px] font-bold uppercase text-black/60">
+              <span>1. PARITÉ (ORIENTATION) //</span>
+              <span v-if="selectedParity" class="text-black font-black">
+                [{{ selectedParity === 'even' ? 'PAIRS ACTIF' : 'IMPAIRS ACTIF' }}]
+              </span>
+            </div>
+            <div class="grid grid-cols-2 gap-1.5">
               <button
-                @click="selectedParity = 'all'"
+                @click="toggleParity('even')"
+                class="py-1.5 px-2 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
-                  selectedParity === 'all'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-black hover:text-white'
-                ]"
-              >
-                TOUTES ({{ parityCounts.all }})
-              </button>
-              <button
-                @click="selectedParity = 'even'"
-                :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
                   selectedParity === 'even'
                     ? 'bg-black text-white'
                     : 'bg-white text-black hover:bg-black hover:text-white'
                 ]"
               >
-                PAIRS ({{ parityCounts.even }})
+                <ArrowRightLeft :size="12" />
+                <span>PAIRS (EST-OUEST)</span>
               </button>
               <button
-                @click="selectedParity = 'odd'"
+                @click="toggleParity('odd')"
+                class="py-1.5 px-2 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
                   selectedParity === 'odd'
                     ? 'bg-black text-white'
                     : 'bg-white text-black hover:bg-black hover:text-white'
                 ]"
               >
-                IMPAIRS ({{ parityCounts.odd }})
+                <ArrowUpDown :size="12" />
+                <span>IMPAIRS (NORD-SUD)</span>
               </button>
             </div>
           </div>
 
-          <!-- Category Filter Chips -->
+          <!-- 2. Types de routes -->
+          <div>
+            <div class="flex items-center justify-between mb-1 font-mono text-[9px] font-bold uppercase text-black/60">
+              <span>2. TYPES DE ROUTES //</span>
+              <span v-if="selectedTypes.length > 0" class="text-black font-black">
+                [{{ selectedTypes.length }} TYPE(S) ACTIF(S)]
+              </span>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button
+                v-for="t in QUICK_TYPES"
+                :key="t.id"
+                @click="toggleType(t.id)"
+                class="py-1.5 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-tight transition-colors cursor-pointer flex items-center justify-center gap-1.5 truncate"
+                :class="[
+                  selectedTypes.includes(t.id)
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
+                ]"
+              >
+                <span
+                  class="w-2 h-2 border border-black shrink-0 inline-block"
+                  :style="{ backgroundColor: t.color }"
+                ></span>
+                <span class="truncate">{{ t.label }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Input & Toolbar Header -->
+        <div class="p-3 border-b-[3px] border-black bg-white space-y-2 shrink-0">
+          <!-- Search Input -->
           <div>
             <label class="block font-mono text-[9px] font-bold uppercase tracking-[1px] text-black/60 mb-1">
-              RÉSEAU / CATÉGORIE //
+              RECHERCHER PAR N° OU VILLE //
             </label>
-            <div class="grid grid-cols-2 gap-1.5 sm:flex sm:gap-1.5">
+            <div class="relative">
+              <input
+                v-model="globalFilter"
+                type="text"
+                placeholder="20, 138, GASPÉ, LAURENTIDES..."
+                class="w-full px-3 py-1.5 text-xs bg-[#F0F0F0] hover:bg-[#E8E8E8] text-black border-[2px] border-black focus:border-[3px] focus:bg-white focus:outline-none font-mono transition-all placeholder:text-black/40 uppercase"
+              />
               <button
-                @click="selectedCategory = 'all'"
-                :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
-                  selectedCategory === 'all'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-black hover:text-white'
-                ]"
+                v-if="globalFilter"
+                @click="globalFilter = ''"
+                class="absolute right-2 top-1/2 -translate-y-1/2 font-mono font-bold text-xs hover:text-[#FF0000] px-1 cursor-pointer"
               >
-                TOUTES ({{ routes.length }})
-              </button>
-              <button
-                @click="selectedCategory = 'autoroute'"
-                :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
-                  selectedCategory === 'autoroute'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-black hover:text-white'
-                ]"
-              >
-                AUTOROUTES ({{ routes.filter(r => r.category === 'autoroute').length }})
-              </button>
-              <button
-                @click="selectedCategory = 'national'"
-                :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
-                  selectedCategory === 'national'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-black hover:text-white'
-                ]"
-              >
-                NATIONALES ({{ routes.filter(r => r.category === 'national').length }})
-              </button>
-              <button
-                @click="selectedCategory = 'regional'"
-                :class="[
-                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
-                  selectedCategory === 'regional'
-                    ? 'bg-black text-white'
-                    : 'bg-white text-black hover:bg-black hover:text-white'
-                ]"
-              >
-                RÉGIONALES ({{ routes.filter(r => r.category === 'regional').length }})
+                [X]
               </button>
             </div>
           </div>
