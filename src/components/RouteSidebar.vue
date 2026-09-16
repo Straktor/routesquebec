@@ -330,76 +330,11 @@ function getSectionIcon(iconName: string) {
 
 <template>
   <aside class="flex h-full bg-white border-r-[5px] border-black select-none overflow-hidden">
-    <!-- VS CODE ACTIVITY BAR (Desktop only: vertical strip on the left) -->
-    <div class="hidden md:flex w-[52px] bg-[#181818] text-[#CCCCCC] flex-col items-center justify-between py-2 border-r-[3px] border-black shrink-0 z-10">
-      <!-- Top View Tabs -->
-      <div class="flex flex-col w-full items-center gap-1">
-        <!-- Tab 1: Routes Explorer -->
-        <button
-          @click="activeTab = 'routes'"
-          title="Explorateur de routes"
-          :class="[
-            'w-full h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer group',
-            activeTab === 'routes'
-              ? 'text-white border-l-[3px] border-white bg-[#252526]'
-              : 'text-[#888888] hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
-          ]"
-        >
-          <RouteIcon :size="20" />
-          <span class="text-[8px] font-mono font-bold mt-1 tracking-tighter">ROUTES</span>
-          <!-- Active Count Badge -->
-          <span
-            v-if="selectedRouteIds.length > 0"
-            class="absolute top-1 right-1 px-1 py-0.2 bg-[#0055FF] text-white font-mono text-[8px] font-bold border border-black"
-          >
-            {{ selectedRouteIds.length }}
-          </span>
-        </button>
-
-        <!-- Tab 2: Nomenclature / Groups -->
-        <button
-          @click="activeTab = 'nomenclature'"
-          title="Nomenclature & Groupes MTQ"
-          :class="[
-            'w-full h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer group',
-            activeTab === 'nomenclature'
-              ? 'text-white border-l-[3px] border-white bg-[#252526]'
-              : 'text-[#888888] hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
-          ]"
-        >
-          <FolderTree :size="20" />
-          <span class="text-[8px] font-mono font-bold mt-1 tracking-tighter">GROUPES</span>
-          <span
-            class="absolute top-1 right-1 px-1 py-0.2 bg-[#A822FF] text-white font-mono text-[8px] font-bold border border-black"
-          >
-            {{ ROUTE_SECTIONS.length }}
-          </span>
-        </button>
-      </div>
-
-      <!-- Bottom Actions: MTQ Guide -->
-      <div class="flex flex-col w-full items-center">
-        <button
-          @click="emit('openGuide')"
-          title="Guide officiel MTQ"
-          :class="[
-            'w-full h-12 flex flex-col items-center justify-center transition-colors cursor-pointer',
-            isGuideOpen
-              ? 'text-white border-l-[3px] border-white bg-[#252526]'
-              : 'text-[#888888] hover:text-white hover:bg-white/5 border-l-[3px] border-transparent'
-          ]"
-        >
-          <BookOpen :size="18" />
-          <span class="text-[8px] font-mono font-bold mt-0.5 tracking-tighter">GUIDE</span>
-        </button>
-      </div>
-    </div>
-
     <!-- MAIN SIDEBAR CONTENT PANEL -->
     <div class="flex-1 flex flex-col min-w-0 bg-white h-full overflow-hidden">
       <!-- Top Tab Header Bar -->
       <div class="h-10 bg-[#EFEFEF] border-b-[3px] border-black flex items-center justify-between px-3 shrink-0">
-        <!-- Desktop: VS Code style tab headers -->
+        <!-- Desktop: Tab headers -->
         <div class="hidden md:flex items-center gap-1 font-mono text-[11px] font-bold tracking-wider">
           <button
             @click="activeTab = 'routes'"
@@ -422,6 +357,19 @@ function getSectionIcon(iconName: string) {
             ]"
           >
             GROUPES MTQ ({{ ROUTE_SECTIONS.length }})
+          </button>
+          <button
+            @click="emit('openGuide')"
+            :class="[
+              'px-2.5 py-1 uppercase transition-colors cursor-pointer border-[2px] flex items-center gap-1',
+              isGuideOpen
+                ? 'bg-black text-white border-black'
+                : 'bg-transparent text-black border-transparent hover:border-black/30'
+            ]"
+            title="Guide officiel MTQ"
+          >
+            <BookOpen :size="12" />
+            GUIDE
           </button>
         </div>
 
