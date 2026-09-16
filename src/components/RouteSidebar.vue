@@ -57,18 +57,45 @@ const activeTab = computed({
 
 // Tab 1: Route Explorer state
 const selectedCategory = ref<'all' | RouteCategory>('all');
+const selectedParity = ref<'all' | 'even' | 'odd'>('all');
 const globalFilter = ref('');
 const sorting = ref<SortingState>([{ id: 'number', desc: false }]);
 
 // Tab 2: Nomenclature state
 const nomenclatureFilter = ref('');
 
-// Filter by category before table processing
+// Parity counts based on current category
+const parityCounts = computed(() => {
+  const base = selectedCategory.value === 'all'
+    ? props.routes
+    : props.routes.filter(r => r.category === selectedCategory.value);
+  let even = 0;
+  let odd = 0;
+  base.forEach(r => {
+    const num = parseInt(r.number, 10);
+    if (!isNaN(num)) {
+      if (num % 2 === 0) even++;
+      else odd++;
+    }
+  });
+  return { all: base.length, even, odd };
+});
+
+// Filter by category and parity before table processing
 const filteredData = computed(() => {
-  if (selectedCategory.value === 'all') {
-    return props.routes;
-  }
-  return props.routes.filter(r => r.category === selectedCategory.value);
+  return props.routes.filter(r => {
+    if (selectedCategory.value !== 'all' && r.category !== selectedCategory.value) {
+      return false;
+    }
+    if (selectedParity.value !== 'all') {
+      const num = parseInt(r.number, 10);
+      if (isNaN(num)) return false;
+      const isEven = num % 2 === 0;
+      if (selectedParity.value === 'even' && !isEven) return false;
+      if (selectedParity.value === 'odd' && isEven) return false;
+    }
+    return true;
+  });
 });
 
 const columnHelper = createColumnHelper<RouteInfo>();
@@ -368,8 +395,53 @@ function getSectionIcon(iconName: string) {
             </div>
           </div>
 
+          <!-- Parity Filter Chips -->
+          <div>
+            <label class="block font-mono text-[9px] font-bold uppercase tracking-[1px] text-black/60 mb-1">
+              PARITÉ / ORIENTATION //
+            </label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button
+                @click="selectedParity = 'all'"
+                :class="[
+                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
+                  selectedParity === 'all'
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
+                ]"
+              >
+                TOUTES ({{ parityCounts.all }})
+              </button>
+              <button
+                @click="selectedParity = 'even'"
+                :class="[
+                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
+                  selectedParity === 'even'
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
+                ]"
+              >
+                PAIRS ({{ parityCounts.even }})
+              </button>
+              <button
+                @click="selectedParity = 'odd'"
+                :class="[
+                  'py-1 px-1.5 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-[0.5px] text-center cursor-pointer transition-colors truncate',
+                  selectedParity === 'odd'
+                    ? 'bg-black text-white'
+                    : 'bg-white text-black hover:bg-black hover:text-white'
+                ]"
+              >
+                IMPAIRS ({{ parityCounts.odd }})
+              </button>
+            </div>
+          </div>
+
           <!-- Category Filter Chips -->
           <div>
+            <label class="block font-mono text-[9px] font-bold uppercase tracking-[1px] text-black/60 mb-1">
+              RÉSEAU / CATÉGORIE //
+            </label>
             <div class="grid grid-cols-2 gap-1.5 sm:flex sm:gap-1.5">
               <button
                 @click="selectedCategory = 'all'"

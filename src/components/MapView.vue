@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import L from 'leaflet';
+import { ArrowRightLeft, Route as RouteIcon, X as XIcon } from 'lucide-vue-next';
 import type { RouteInfo } from '../types/route';
-import { ROUTE_SECTIONS, type RouteSectionGroup, getRouteTypeInfo, ROUTE_TYPE_STYLES } from '../utils/routeSections';
+import { getRouteTypeInfo, ROUTE_TYPE_STYLES } from '../utils/routeSections';
 
 const props = defineProps<{
   routes: RouteInfo[];
@@ -240,25 +241,99 @@ function resetView() {
   map.setView(QUEBEC_CENTER, DEFAULT_ZOOM, { animate: true });
 }
 
-function isSectionActive(section: RouteSectionGroup) {
-  const matching = props.routes.filter(section.matcher);
-  if (matching.length === 0) return false;
-  return matching.every(r => props.selectedRouteIds.includes(r.id));
+const selectedParity = ref<'even' | 'odd' | null>(null);
+const selectedTypes = ref<string[]>([]);
+
+interface QuickTypeOption {
+  id: string;
+  label: string;
+  color: string;
 }
 
-function handleQuickSelectSection(section: RouteSectionGroup) {
-  const matchingIds = props.routes.filter(section.matcher).map(r => r.id);
-  const allSelected = matchingIds.every(id => props.selectedRouteIds.includes(id));
-  if (allSelected) {
-    emit('clearSelection');
-  } else {
-    emit('setSelection', matchingIds);
+const QUICK_TYPES: QuickTypeOption[] = [
+  { id: 'autoroute', label: 'AUTOROUTES', color: '#0055FF' },
+  { id: 'national', label: 'NATIONALES', color: '#00B341' },
+  { id: 'regional', label: 'RÉGIONALES', color: '#A822FF' },
+  { id: 'bypass', label: 'ROCADES (4xx)', color: '#00C8D7' },
+  { id: 'spur', label: 'ANTENNES (5xx+)', color: '#FF8800' },
+];
+
+function matchesQuickFilter(r: RouteInfo, parity: 'even' | 'odd' | null, types: string[]): boolean {
+  if (parity !== null) {
+    const num = parseInt(r.number, 10);
+    if (isNaN(num)) return false;
+    const isEven = num % 2 === 0;
+    if (parity === 'even' && !isEven) return false;
+    if (parity === 'odd' && isEven) return false;
   }
+
+  if (types.length > 0) {
+    const num = parseInt(r.number, 10);
+    const matchesAny = types.some(t => {
+      if (t === 'autoroute') return r.category === 'autoroute';
+      if (t === 'national') return r.category === 'national' || (num >= 100 && num < 200 && r.category !== 'autoroute');
+      if (t === 'regional') return r.category === 'regional' || (num >= 200 && r.category !== 'autoroute');
+      if (t === 'bypass') {
+        return r.category === 'autoroute' && r.number.length === 3 && (r.number.startsWith('4') || r.number.startsWith('6'));
+      }
+      if (t === 'spur') {
+        return r.category === 'autoroute' && r.number.length === 3 && (r.number.startsWith('5') || r.number.startsWith('7') || r.number.startsWith('9'));
+      }
+      return false;
+    });
+    if (!matchesAny) return false;
+  }
+
+  return true;
+}
+
+function applyQuickFilter() {
+  if (selectedParity.value === null && selectedTypes.value.length === 0) {
+    emit('clearSelection');
+    return;
+  }
+  const matchingIds = props.routes
+    .filter(r => matchesQuickFilter(r, selectedParity.value, selectedTypes.value))
+    .map(r => r.id);
+  emit('setSelection', matchingIds);
+}
+
+function toggleParity(parity: 'even' | 'odd') {
+  if (selectedParity.value === parity) {
+    selectedParity.value = null;
+  } else {
+    selectedParity.value = parity;
+  }
+  applyQuickFilter();
+}
+
+function toggleType(typeId: string) {
+  if (selectedTypes.value.includes(typeId)) {
+    selectedTypes.value = selectedTypes.value.filter(t => t !== typeId);
+  } else {
+    if (typeId === 'autoroute') {
+      selectedTypes.value = selectedTypes.value.filter(t => t !== 'bypass' && t !== 'spur');
+    } else if (typeId === 'bypass' || typeId === 'spur') {
+      selectedTypes.value = selectedTypes.value.filter(t => t !== 'autoroute');
+    }
+    selectedTypes.value = [...selectedTypes.value, typeId];
+  }
+  applyQuickFilter();
+}
+
+function clearQuickFilter() {
+  selectedParity.value = null;
+  selectedTypes.value = [];
+  emit('clearSelection');
 }
 
 watch(
   () => props.selectedRouteIds,
-  () => {
+  (newIds) => {
+    if (newIds.length === 0) {
+      selectedParity.value = null;
+      selectedTypes.value = [];
+    }
     updateHighlight(true);
   },
   { deep: true }
@@ -298,29 +373,88 @@ onUnmounted(() => {
     <!-- Map Container -->
     <div ref="mapContainer" class="w-full h-full z-0 bg-[#F0F0F0]"></div>
 
-    <!-- Floating Quick Type Selector Bar -->
+    <!-- Floating Quick Type & Parity Selector Bar -->
     <div
       :class="[
-        'absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-[500] sm:max-w-[calc(100%-220px)] overflow-x-auto items-center gap-1.5 p-1.5 sm:p-2 bg-white border-[3px] border-black text-xs font-mono select-none',
-        isSidebarOpen ? 'hidden md:flex' : 'flex'
+        'absolute top-2 left-2 right-2 sm:right-auto sm:top-4 sm:left-4 z-[500] sm:max-w-[calc(100%-240px)] bg-white border-[3px] border-black text-xs font-mono select-none shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] p-1.5 sm:p-2 space-y-1.5',
+        isSidebarOpen ? 'hidden md:block' : 'block'
       ]"
     >
-      <span class="font-bold uppercase tracking-wider pl-1 pr-1 shrink-0 text-[10px] sm:text-xs">
-        TYPES MTQ :
-      </span>
-      <button
-        v-for="sec in ROUTE_SECTIONS"
-        :key="sec.id"
-        @click="handleQuickSelectSection(sec)"
-        class="px-2 py-1 border-2 border-black uppercase text-[10px] sm:text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer"
-        :class="[
-          isSectionActive(sec)
-            ? 'bg-black text-white'
-            : 'bg-white text-black hover:bg-black hover:text-white'
-        ]"
-      >
-        {{ sec.shortLabel }}
-      </button>
+      <!-- Row 1: Parité / Orientation (Pairs vs Impairs) -->
+      <div class="flex items-center gap-1.5 overflow-x-auto flex-nowrap pb-0.5">
+        <span class="font-bold uppercase tracking-wider text-[10px] sm:text-[11px] shrink-0 text-black flex items-center gap-1 pl-0.5">
+          <ArrowRightLeft :size="12" class="shrink-0" />
+          PARITÉ :
+        </span>
+
+        <button
+          @click="toggleParity('even')"
+          class="px-2 py-1 border-2 border-black uppercase text-[10px] sm:text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer flex items-center gap-1"
+          :class="[
+            selectedParity === 'even'
+              ? 'bg-black text-white'
+              : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          <span>PAIRS (EST-OUEST)</span>
+        </button>
+
+        <button
+          @click="toggleParity('odd')"
+          class="px-2 py-1 border-2 border-black uppercase text-[10px] sm:text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer flex items-center gap-1"
+          :class="[
+            selectedParity === 'odd'
+              ? 'bg-black text-white'
+              : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          <span>IMPAIRS (NORD-SUD)</span>
+        </button>
+
+        <!-- Divider & Clear button / Selected counter -->
+        <div
+          v-if="selectedRouteIds.length > 0 || selectedParity !== null || selectedTypes.length > 0"
+          class="flex items-center gap-1.5 shrink-0 ml-auto pl-2 border-l-2 border-black/20"
+        >
+          <span class="px-1.5 py-0.5 bg-black text-white font-mono text-[10px] font-bold">
+            {{ selectedRouteIds.length }} AXES
+          </span>
+          <button
+            @click="clearQuickFilter"
+            class="px-1.5 py-0.5 border border-black hover:bg-[#CC0000] hover:text-white text-[#CC0000] font-mono text-[10px] font-bold uppercase transition-colors cursor-pointer flex items-center gap-1"
+            title="Réinitialiser la sélection"
+          >
+            <XIcon :size="10" />
+            <span>EFFACER</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: Types de routes -->
+      <div class="flex items-center gap-1.5 overflow-x-auto flex-nowrap pt-1.5 border-t border-black/15">
+        <span class="font-bold uppercase tracking-wider text-[10px] sm:text-[11px] shrink-0 text-black flex items-center gap-1 pl-0.5">
+          <RouteIcon :size="12" class="shrink-0" />
+          TYPES :
+        </span>
+
+        <button
+          v-for="t in QUICK_TYPES"
+          :key="t.id"
+          @click="toggleType(t.id)"
+          class="px-2 py-1 border-2 border-black uppercase text-[10px] sm:text-[11px] font-bold tracking-tight whitespace-nowrap transition-colors shrink-0 cursor-pointer flex items-center gap-1.5"
+          :class="[
+            selectedTypes.includes(t.id)
+              ? 'bg-black text-white'
+              : 'bg-white text-black hover:bg-black hover:text-white'
+          ]"
+        >
+          <span
+            class="w-2 h-2 rounded-none border border-black inline-block shrink-0"
+            :style="{ backgroundColor: t.color }"
+          ></span>
+          <span>{{ t.label }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Floating Map Controls (Top Right) -->
