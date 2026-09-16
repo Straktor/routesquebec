@@ -9,33 +9,22 @@ import {
   type SortingState,
 } from '@tanstack/vue-table';
 import {
-  Route as RouteIcon,
-  FolderTree,
   BookOpen,
   ArrowRightLeft,
   ArrowUpDown,
-  Compass,
-  RefreshCw,
-  GitFork,
-  Navigation,
-  MapPin,
-  Check,
-  X,
   Zap,
 } from 'lucide-vue-next';
 import type { RouteInfo } from '../types/route';
-import { ROUTE_SECTIONS, type RouteSectionGroup, getRouteTypeInfo } from '../utils/routeSections';
+import { getRouteTypeInfo } from '../utils/routeSections';
 
 const props = withDefaults(
   defineProps<{
     routes: RouteInfo[];
     selectedRouteIds: string[];
     isLoading?: boolean;
-    activeTab?: 'routes' | 'nomenclature';
     isGuideOpen?: boolean;
   }>(),
   {
-    activeTab: 'routes',
     isGuideOpen: false,
   }
 );
@@ -46,24 +35,14 @@ const emit = defineEmits<{
   (e: 'clearSelection'): void;
   (e: 'setSelection', ids: string[]): void;
   (e: 'openGuide'): void;
-  (e: 'update:activeTab', tab: 'routes' | 'nomenclature'): void;
   (e: 'close'): void;
 }>();
 
-// Tab state: 'routes' (Explorer) vs 'nomenclature' (Groups)
-const activeTab = computed({
-  get: () => props.activeTab,
-  set: (val: 'routes' | 'nomenclature') => emit('update:activeTab', val),
-});
-
-// Tab 1: Route Explorer & Quick Selector state
+// Route Explorer & Quick Selector state
 const selectedParity = ref<'even' | 'odd' | null>(null);
 const selectedTypes = ref<string[]>([]);
 const globalFilter = ref('');
 const sorting = ref<SortingState>([{ id: 'number', desc: false }]);
-
-// Tab 2: Nomenclature state
-const nomenclatureFilter = ref('');
 
 interface QuickTypeOption {
   id: string;
@@ -269,95 +248,19 @@ function toggleSort(columnId: string) {
   }
 }
 
-// Nomenclature helper functions
-function getSectionRoutes(section: RouteSectionGroup): RouteInfo[] {
-  return props.routes.filter(section.matcher);
-}
-
-function getSectionCount(section: RouteSectionGroup): number {
-  return getSectionRoutes(section).length;
-}
-
-function getSectionSelectedCount(section: RouteSectionGroup): number {
-  return getSectionRoutes(section).filter(r => isSelected(r.id)).length;
-}
-
-function isSectionAllSelected(section: RouteSectionGroup): boolean {
-  const matching = getSectionRoutes(section);
-  if (matching.length === 0) return false;
-  return matching.every(r => isSelected(r.id));
-}
-
-function selectBySection(section: RouteSectionGroup) {
-  const matchingIds = getSectionRoutes(section).map(r => r.id);
-  if (matchingIds.length === 0) return;
-
-  if (isSectionAllSelected(section)) {
-    const removeSet = new Set(matchingIds);
-    const remaining = props.selectedRouteIds.filter(id => !removeSet.has(id));
-    emit('setSelection', remaining);
-  } else {
-    const merged = Array.from(new Set([...props.selectedRouteIds, ...matchingIds]));
-    emit('setSelection', merged);
-  }
-}
-
-// Filtered sections for Tab 2
-const filteredSections = computed(() => {
-  if (!nomenclatureFilter.value) return ROUTE_SECTIONS;
-  const q = nomenclatureFilter.value.toLowerCase().trim();
-  return ROUTE_SECTIONS.filter(s =>
-    s.label.toLowerCase().includes(q) ||
-    s.description.toLowerCase().includes(q) ||
-    s.shortLabel.toLowerCase().includes(q)
-  );
-});
-
-// Icon component mapper for sections
-function getSectionIcon(iconName: string) {
-  switch (iconName) {
-    case 'ArrowRightLeft': return ArrowRightLeft;
-    case 'ArrowUpDown': return ArrowUpDown;
-    case 'Route': return RouteIcon;
-    case 'RefreshCw': return RefreshCw;
-    case 'GitFork': return GitFork;
-    case 'Compass': return Compass;
-    case 'Navigation': return Navigation;
-    default: return MapPin;
-  }
-}
 </script>
 
 <template>
   <aside class="flex h-full bg-white border-r-[5px] border-black select-none overflow-hidden">
     <!-- MAIN SIDEBAR CONTENT PANEL -->
     <div class="flex-1 flex flex-col min-w-0 bg-white h-full overflow-hidden">
-      <!-- Top Tab Header Bar -->
+      <!-- Top Header Bar -->
       <div class="h-10 bg-[#EFEFEF] border-b-[3px] border-black flex items-center justify-between px-3 shrink-0">
-        <!-- Desktop: Tab headers -->
-        <div class="hidden md:flex items-center gap-1 font-mono text-[11px] font-bold tracking-wider">
-          <button
-            @click="activeTab = 'routes'"
-            :class="[
-              'px-2.5 py-1 uppercase transition-colors cursor-pointer border-[2px]',
-              activeTab === 'routes'
-                ? 'bg-black text-white border-black'
-                : 'bg-transparent text-black border-transparent hover:border-black/30'
-            ]"
-          >
+        <!-- Desktop: Title and Guide button -->
+        <div class="hidden md:flex items-center gap-2 font-mono text-[11px] font-bold tracking-wider">
+          <span class="px-2.5 py-1 uppercase bg-black text-white border-[2px] border-black">
             ROUTES ({{ routes.length }})
-          </button>
-          <button
-            @click="activeTab = 'nomenclature'"
-            :class="[
-              'px-2.5 py-1 uppercase transition-colors cursor-pointer border-[2px]',
-              activeTab === 'nomenclature'
-                ? 'bg-black text-white border-black'
-                : 'bg-transparent text-black border-transparent hover:border-black/30'
-            ]"
-          >
-            GROUPES MTQ ({{ ROUTE_SECTIONS.length }})
-          </button>
+          </span>
           <button
             @click="emit('openGuide')"
             :class="[
@@ -369,7 +272,7 @@ function getSectionIcon(iconName: string) {
             title="Guide officiel MTQ"
           >
             <BookOpen :size="12" />
-            GUIDE
+            GUIDE MTQ
           </button>
         </div>
 
@@ -377,7 +280,7 @@ function getSectionIcon(iconName: string) {
         <div class="md:hidden flex items-center justify-between w-full font-mono text-xs font-bold">
           <span class="uppercase tracking-wider flex items-center gap-2">
             <span class="inline-block w-2.5 h-2.5 bg-black"></span>
-            {{ activeTab === 'routes' ? `ROUTES (${table.getRowModel().rows.length}/${routes.length})` : `GROUPES MTQ (${ROUTE_SECTIONS.length})` }}
+            ROUTES ({{ table.getRowModel().rows.length }}/{{ routes.length }})
           </span>
           <button
             @click="emit('close')"
@@ -388,14 +291,12 @@ function getSectionIcon(iconName: string) {
         </div>
 
         <span class="text-[10px] font-mono font-bold text-black/50 hidden md:inline uppercase">
-          {{ activeTab === 'routes' ? `${table.getRowModel().rows.length} AFFICHÉES` : '3 FAMILLES' }}
+          {{ table.getRowModel().rows.length }} AFFICHÉES
         </span>
       </div>
 
-      <!-- ================================================================= -->
-      <!-- TAB 1: ROUTES EXPLORER                                            -->
-      <!-- ================================================================= -->
-      <div v-show="activeTab === 'routes'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <!-- ROUTES EXPLORER -->
+      <div class="flex-1 flex flex-col min-h-0 overflow-hidden">
         <!-- Quick Selector Box in Left Panel -->
         <div class="p-3.5 bg-[#F7F7F7] border-b-[3px] border-black space-y-2.5 shrink-0">
           <div class="flex items-center justify-between">
@@ -654,264 +555,6 @@ function getSectionIcon(iconName: string) {
         <div class="p-2.5 bg-white border-t-[3px] border-black text-[11px] font-mono font-bold uppercase flex items-center justify-between shrink-0">
           <span>{{ table.getRowModel().rows.length }} AXES AFFICHÉS</span>
           <span class="text-black/60">MTQ // QUÉBEC</span>
-        </div>
-      </div>
-
-      <!-- ================================================================= -->
-      <!-- TAB 2: NOMENCLATURE & GROUPS                                      -->
-      <!-- ================================================================= -->
-      <div v-show="activeTab === 'nomenclature'" class="flex-1 flex flex-col min-h-0 overflow-hidden bg-[#F7F7F7]">
-        <!-- Search & Control Header -->
-        <div class="p-3.5 border-b-[3px] border-black bg-white space-y-2 shrink-0">
-          <div>
-            <label class="block font-mono text-[10px] font-bold uppercase tracking-[1px] text-black mb-1">
-              FILTRER LES GROUPES //
-            </label>
-            <div class="relative">
-              <input
-                v-model="nomenclatureFilter"
-                type="text"
-                placeholder="RECHERCHER UN GROUPE (PAIRS, ROCADES, RIVE-SUD)..."
-                class="w-full px-3 py-1.5 text-xs bg-[#F0F0F0] hover:bg-[#E8E8E8] text-black border-[2px] border-black focus:border-[3px] focus:bg-white focus:outline-none font-mono uppercase transition-all"
-              />
-              <button
-                v-if="nomenclatureFilter"
-                @click="nomenclatureFilter = ''"
-                class="absolute right-2 top-1/2 -translate-y-1/2 font-mono font-bold text-xs hover:text-[#FF0000] px-1 cursor-pointer"
-              >
-                [X]
-              </button>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between text-[10px] font-mono font-bold pt-1">
-            <span class="text-black/60 uppercase">CLASSIFICATION OFFICIELLE MTQ</span>
-            <button
-              @click="emit('openGuide')"
-              class="text-[#0055FF] hover:underline uppercase cursor-pointer"
-            >
-              [VOIR LE GUIDE COMPLET]
-            </button>
-          </div>
-        </div>
-
-        <!-- Groups Container -->
-        <div class="flex-1 overflow-y-auto p-3 space-y-4">
-          <!-- 1. ORIENTATION (PAIRS / IMPAIRS) -->
-          <div class="space-y-2">
-            <div class="flex items-center justify-between border-b-2 border-black pb-1">
-              <div class="font-mono text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
-                <ArrowRightLeft :size="14" />
-                <span>1. AXES ET ORIENTATION DU FLEUVE</span>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <div
-                v-for="sec in filteredSections.filter(s => s.category === 'orientation')"
-                :key="sec.id"
-                class="border-[3px] border-black bg-white p-3 space-y-2.5 transition-shadow hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <component :is="getSectionIcon(sec.iconName)" :size="16" />
-                      <h4 class="font-bold text-xs font-mono uppercase">{{ sec.label }}</h4>
-                    </div>
-                    <p class="text-[10px] font-mono text-black/70 mt-1 leading-snug">
-                      {{ sec.description }}
-                    </p>
-                  </div>
-
-                  <div class="shrink-0 text-right">
-                    <span class="px-1.5 py-0.5 bg-black text-white font-mono text-[10px] font-bold">
-                      {{ getSectionSelectedCount(sec) }}/{{ getSectionCount(sec) }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Action Button -->
-                <button
-                  @click="selectBySection(sec)"
-                  class="w-full py-1.5 px-3 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2"
-                  :class="[
-                    isSectionAllSelected(sec)
-                      ? 'bg-black text-white hover:bg-[#CC0000] hover:border-[#CC0000]'
-                      : 'bg-white text-black hover:bg-black hover:text-white'
-                  ]"
-                >
-                  <component :is="isSectionAllSelected(sec) ? X : Check" :size="12" />
-                  <span>{{ isSectionAllSelected(sec) ? 'DÉ-SÉLECTIONNER LE GROUPE' : 'SÉLECTIONNER TOUT LE GROUPE' }}</span>
-                </button>
-
-                <!-- Route Chips Preview -->
-                <div class="flex flex-wrap gap-1 pt-1 border-t border-black/20 max-h-24 overflow-y-auto">
-                  <button
-                    v-for="r in getSectionRoutes(sec)"
-                    :key="r.id"
-                    @click.stop="emit('toggleRoute', r.id)"
-                    class="px-1.5 py-0.5 border text-[9px] font-mono font-bold uppercase transition-colors cursor-pointer"
-                    :style="{
-                      borderColor: isSelected(r.id) ? '#000000' : getRouteTypeInfo(r).color,
-                      backgroundColor: isSelected(r.id) ? '#000000' : '#FFFFFF',
-                      color: isSelected(r.id) ? '#FFFFFF' : '#000000'
-                    }"
-                    :title="r.name"
-                  >
-                    {{ r.id }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. HIÉRARCHIE MTQ -->
-          <div class="space-y-2">
-            <div class="flex items-center justify-between border-b-2 border-black pb-1">
-              <div class="font-mono text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
-                <FolderTree :size="14" />
-                <span>2. HIÉRARCHIE & CLASSIFICATION MTQ</span>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <div
-                v-for="sec in filteredSections.filter(s => s.category === 'hierarchy')"
-                :key="sec.id"
-                class="border-[3px] border-black bg-white p-3 space-y-2.5 transition-shadow hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <component :is="getSectionIcon(sec.iconName)" :size="16" />
-                      <h4 class="font-bold text-xs font-mono uppercase">{{ sec.label }}</h4>
-                    </div>
-                    <p class="text-[10px] font-mono text-black/70 mt-1 leading-snug">
-                      {{ sec.description }}
-                    </p>
-                  </div>
-
-                  <div class="shrink-0 text-right">
-                    <span class="px-1.5 py-0.5 bg-black text-white font-mono text-[10px] font-bold">
-                      {{ getSectionSelectedCount(sec) }}/{{ getSectionCount(sec) }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Action Button -->
-                <button
-                  @click="selectBySection(sec)"
-                  class="w-full py-1.5 px-3 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2"
-                  :class="[
-                    isSectionAllSelected(sec)
-                      ? 'bg-black text-white hover:bg-[#CC0000] hover:border-[#CC0000]'
-                      : 'bg-white text-black hover:bg-black hover:text-white'
-                  ]"
-                >
-                  <component :is="isSectionAllSelected(sec) ? X : Check" :size="12" />
-                  <span>{{ isSectionAllSelected(sec) ? 'DÉ-SÉLECTIONNER LE GROUPE' : 'SÉLECTIONNER TOUT LE GROUPE' }}</span>
-                </button>
-
-                <!-- Route Chips Preview -->
-                <div class="flex flex-wrap gap-1 pt-1 border-t border-black/20 max-h-24 overflow-y-auto">
-                  <button
-                    v-for="r in getSectionRoutes(sec)"
-                    :key="r.id"
-                    @click.stop="emit('toggleRoute', r.id)"
-                    class="px-1.5 py-0.5 border text-[9px] font-mono font-bold uppercase transition-colors cursor-pointer"
-                    :style="{
-                      borderColor: isSelected(r.id) ? '#000000' : getRouteTypeInfo(r).color,
-                      backgroundColor: isSelected(r.id) ? '#000000' : '#FFFFFF',
-                      color: isSelected(r.id) ? '#FFFFFF' : '#000000'
-                    }"
-                    :title="r.name"
-                  >
-                    {{ r.id }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 3. GÉOGRAPHIE DU SAINT-LAURENT -->
-          <div class="space-y-2">
-            <div class="flex items-center justify-between border-b-2 border-black pb-1">
-              <div class="font-mono text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
-                <Navigation :size="14" />
-                <span>3. SITUATION GÉOGRAPHIQUE / RIVES</span>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <div
-                v-for="sec in filteredSections.filter(s => s.category === 'geography')"
-                :key="sec.id"
-                class="border-[3px] border-black bg-white p-3 space-y-2.5 transition-shadow hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <component :is="getSectionIcon(sec.iconName)" :size="16" />
-                      <h4 class="font-bold text-xs font-mono uppercase">{{ sec.label }}</h4>
-                    </div>
-                    <p class="text-[10px] font-mono text-black/70 mt-1 leading-snug">
-                      {{ sec.description }}
-                    </p>
-                  </div>
-
-                  <div class="shrink-0 text-right">
-                    <span class="px-1.5 py-0.5 bg-black text-white font-mono text-[10px] font-bold">
-                      {{ getSectionSelectedCount(sec) }}/{{ getSectionCount(sec) }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Action Button -->
-                <button
-                  @click="selectBySection(sec)"
-                  class="w-full py-1.5 px-3 border-[2px] border-black font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center justify-center gap-2"
-                  :class="[
-                    isSectionAllSelected(sec)
-                      ? 'bg-black text-white hover:bg-[#CC0000] hover:border-[#CC0000]'
-                      : 'bg-white text-black hover:bg-black hover:text-white'
-                  ]"
-                >
-                  <component :is="isSectionAllSelected(sec) ? X : Check" :size="12" />
-                  <span>{{ isSectionAllSelected(sec) ? 'DÉ-SÉLECTIONNER LE GROUPE' : 'SÉLECTIONNER TOUT LE GROUPE' }}</span>
-                </button>
-
-                <!-- Route Chips Preview -->
-                <div class="flex flex-wrap gap-1 pt-1 border-t border-black/20 max-h-24 overflow-y-auto">
-                  <button
-                    v-for="r in getSectionRoutes(sec)"
-                    :key="r.id"
-                    @click.stop="emit('toggleRoute', r.id)"
-                    class="px-1.5 py-0.5 border text-[9px] font-mono font-bold uppercase transition-colors cursor-pointer"
-                    :style="{
-                      borderColor: isSelected(r.id) ? '#000000' : getRouteTypeInfo(r).color,
-                      backgroundColor: isSelected(r.id) ? '#000000' : '#FFFFFF',
-                      color: isSelected(r.id) ? '#FFFFFF' : '#000000'
-                    }"
-                    :title="r.name"
-                  >
-                    {{ r.id }}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer Info -->
-        <div class="p-2.5 bg-white border-t-[3px] border-black text-[11px] font-mono font-bold uppercase flex items-center justify-between shrink-0">
-          <span>{{ ROUTE_SECTIONS.length }} GROUPES DE CLASSIFICATION</span>
-          <button
-            v-if="selectedRouteIds.length > 0"
-            @click="emit('clearSelection')"
-            class="text-[#FFA500] hover:underline cursor-pointer"
-          >
-            [TOUT DÉCOCHÉ]
-          </button>
         </div>
       </div>
     </div>

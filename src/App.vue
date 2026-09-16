@@ -8,7 +8,6 @@ import NumberingGuideModal from './components/NumberingGuideModal.vue';
 import {
   Map as MapIcon,
   Route as RouteIcon,
-  FolderTree,
   BookOpen
 } from 'lucide-vue-next';
 
@@ -19,7 +18,6 @@ const routes = computed(() => routesData.value ?? []);
 const selectedRouteIds = ref<string[]>([]);
 const isMobile = ref(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 const isSidebarOpen = ref(!isMobile.value);
-const activeTab = ref<'routes' | 'nomenclature'>('routes');
 const isGuideOpen = ref(false);
 
 const totalDistanceKm = computed(() => {
@@ -61,23 +59,13 @@ function toggleGuide() {
   isGuideOpen.value = !isGuideOpen.value;
 }
 
-function handleSidebarTabChange(tab: 'routes' | 'nomenclature') {
-  activeTab.value = tab;
-  isGuideOpen.value = false;
-}
-
-function openMobileTab(tab: 'carte' | 'routes' | 'nomenclature' | 'guide') {
+function openMobileTab(tab: 'carte' | 'routes' | 'guide') {
   if (tab === 'carte') {
     isGuideOpen.value = false;
     isSidebarOpen.value = false;
   } else if (tab === 'routes') {
     isGuideOpen.value = false;
     isSidebarOpen.value = true;
-    activeTab.value = 'routes';
-  } else if (tab === 'nomenclature') {
-    isGuideOpen.value = false;
-    isSidebarOpen.value = true;
-    activeTab.value = 'nomenclature';
   } else if (tab === 'guide') {
     isGuideOpen.value = true;
     isSidebarOpen.value = false;
@@ -113,13 +101,11 @@ function openMobileTab(tab: 'carte' | 'routes' | 'nomenclature' | 'guide') {
       >
         <RouteSidebar
           v-show="isSidebarOpen"
-          :active-tab="activeTab"
           :routes="routes"
           :selected-route-ids="selectedRouteIds"
           :is-loading="isLoading"
           :is-guide-open="isGuideOpen"
           class="flex-1 min-h-0"
-          @update:active-tab="handleSidebarTabChange"
           @toggle-route="handleToggleRoute"
           @select-all="handleSelectAll"
           @clear-selection="handleClearSelection"
@@ -205,7 +191,7 @@ function openMobileTab(tab: 'carte' | 'routes' | 'nomenclature' | 'guide') {
         @click="openMobileTab('routes')"
         :class="[
           'flex-1 h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer border-t-[3px]',
-          !isGuideOpen && isSidebarOpen && activeTab === 'routes'
+          !isGuideOpen && isSidebarOpen
             ? 'bg-[#252526] text-white border-[#0055FF]'
             : 'text-[#888888] border-transparent hover:text-white'
         ]"
@@ -218,20 +204,6 @@ function openMobileTab(tab: 'carte' | 'routes' | 'nomenclature' | 'guide') {
         >
           {{ selectedRouteIds.length }}
         </span>
-      </button>
-
-      <!-- GROUPES Tab -->
-      <button
-        @click="openMobileTab('nomenclature')"
-        :class="[
-          'flex-1 h-13 flex flex-col items-center justify-center relative transition-colors cursor-pointer border-t-[3px]',
-          !isGuideOpen && isSidebarOpen && activeTab === 'nomenclature'
-            ? 'bg-[#252526] text-white border-[#0055FF]'
-            : 'text-[#888888] border-transparent hover:text-white'
-        ]"
-      >
-        <FolderTree :size="18" />
-        <span class="text-[9px] font-mono font-bold mt-0.5 tracking-wider uppercase">GROUPES</span>
       </button>
 
       <!-- GUIDE Tab -->
